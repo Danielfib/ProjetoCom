@@ -1,8 +1,4 @@
-import java.util.ArrayList;
-
-
 public class Pacote {
-
 	int portOrigem;
 	int portDestino;
 	int numSeq;
@@ -13,11 +9,11 @@ public class Pacote {
 	boolean fin;
 	//janelaReceptor;
 	int checkSum;
-	ArrayList<Byte> dados;
+	byte[] dados;
 	
 	public Pacote(int portOrigem, int portDestino, int numSeq,
 			int numConfirmacao, boolean ack, boolean rst, boolean syn,
-			boolean fin, int checkSum, ArrayList<Byte> dados) {
+			boolean fin, int checkSum, byte[] msgBytes) {
 		this.portOrigem = portOrigem;
 		this.portDestino = portDestino;
 		this.numSeq = numSeq;
@@ -27,7 +23,7 @@ public class Pacote {
 		this.syn = syn;
 		this.fin = fin;
 		this.checkSum = checkSum;
-		this.dados = dados;
+		this.dados = msgBytes;
 	}
 	
 	//pendente

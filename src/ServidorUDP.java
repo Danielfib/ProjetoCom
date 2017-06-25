@@ -1,11 +1,12 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 public class ServidorUDP {
 
 	public static void main(String[] args) {
-		int porta = 2027; // ver de onde Ã©
+	int porta = 2020; // ver de onde é
 
 		while (true) {
 			try {

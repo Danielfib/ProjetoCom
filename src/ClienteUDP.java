@@ -12,16 +12,20 @@ public class ClienteUDP {
 
 		while (true) {
 			try {
-				DatagramSocket clientSocket = new DatagramSocket();
+				//DatagramSocket clientSocket = new DatagramSocket();
 				String ip = "192.168.25.19"; // botar pra pegar da interface
 				InetAddress addr = InetAddress.getByName(ip);
 				String msg = in.nextLine(); // botar pra pegar da interface
 				byte[] msgBytes = msg.getBytes();
 
-				DatagramPacket pkg = new DatagramPacket(msgBytes, msgBytes.length, addr, porta);
-				clientSocket.send(pkg);
+				int cNumSeq = 0;
+				
+				Pacote pkt = new Pacote(porta, porta, cNumSeq, 0, false, false, false, false, 0, msgBytes);
+				//DatagramPacket pkg = new DatagramPacket(msgBytes, msgBytes.length, addr, porta);
+				GDPClient.GDPsend(pkt, addr, porta);
+				//clientSocket.send(pkg);
 
-				clientSocket.close();
+				//clientSocket.close();
 			} catch (IOException ioe) {
 				System.out.println("exception do cliente");
 
