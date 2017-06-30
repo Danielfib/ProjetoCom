@@ -1,6 +1,7 @@
+ 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
+ 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -13,87 +14,96 @@ import java.util.Calendar;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
-
+import javax.swing.JScrollPane;
+import javax.swing.JProgressBar;
+import java.awt.Color;
+ 
 public class Chat extends JFrame {
-
-	private JPanel contentPane;
-	private JTextField Escrito;
-
-	
-	// criando variaveis importantes para a aplicação
-	
-	String mensagem1, Outras;
+ 
+    private JPanel contentPane;
+    private JTextField Escrito;
+ 
+   
+    // criando variaveis importantes para a aplicaÃ§Ã£o
+   
+    String mensagem1, Outras;
     Calendar cal = Calendar.getInstance();
-    SimpleDateFormat sdf = new SimpleDateFormat("dd:MM:yyyy 'uma' EE 'às' mm:ss:zz ' Mateus diz: ' ");
-    
-	/**
-	 * Launch the application.
-	 */
-	public static void NewScreen() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Chat frame = new Chat();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
-	public Chat() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 697, 533);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
-		
-		
-		
-		
-		Escrito = new JTextField();
-		Escrito.setBounds(12, 436, 459, 45);
-		contentPane.add(Escrito);
-		Escrito.setColumns(10);
-		
-		
-		
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(12, 61, 655, 359);
-		contentPane.add(textArea);
-		
-		JButton BtnEnviar = new JButton("ENVIAR");
-		BtnEnviar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				int contador = 0 ;
-				if( contador == 0){
-					contador++;
-					mensagem1 = Escrito.getText();
-					textArea.setText(mensagem1);	
-				}else{
-					 Outras = Escrito.getText();
-	                 textArea.setText(textArea.getText() + '\n' + sdf.format(cal.getTime()) + " " + Outras);
-				}
-			}
-		});
-		
-		BtnEnviar.setFont(new Font("Tahoma", Font.BOLD, 17));
-		BtnEnviar.setBounds(498, 436, 169, 41);
-		contentPane.add(BtnEnviar);
-		
-		JLabel lblNewLabel = new JLabel("New label");
-		lblNewLabel.setBounds(12, 14, 325, 34);
-		contentPane.add(lblNewLabel);
-		
-		JButton btnAnexo = new JButton("ANEXO");
-		btnAnexo.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		btnAnexo.setBounds(570, 19, 97, 25);
-		contentPane.add(btnAnexo);
-	}
+    SimpleDateFormat sdf = new SimpleDateFormat("dd:MM:yyyy 'uma' EE 'Ã s' mm:ss:zz ' VocÃª diz: ' ");
+   
+    /**
+     * Launch the application.
+     */
+    public static void NewScreen() {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    Chat frame = new Chat();
+                    frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+ 
+    /**
+     * Create the frame.
+     */
+    public Chat() {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 697, 489);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
+       
+       
+       
+       
+        Escrito = new JTextField();
+        Escrito.setBounds(6, 397, 459, 45);
+        contentPane.add(Escrito);
+        Escrito.setColumns(10);
+        
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setBounds(6, 56, 655, 323);
+        contentPane.add(scrollPane);
+       
+       
+       
+        JTextArea textArea = new JTextArea();
+        scrollPane.setViewportView(textArea);
+       
+        JButton BtnEnviar = new JButton("ENVIAR");
+        BtnEnviar.addActionListener(new ActionListener() {
+        	int contador = 0 ;
+            public void actionPerformed(ActionEvent arg0) {
+           
+                if( contador == 0){
+                    contador++;
+                    mensagem1 = Escrito.getText();
+                    textArea.setText(sdf.format(cal.getTime()) + " "+ mensagem1);   
+                }else{
+                    Outras = Escrito.getText();
+                    textArea.setText(textArea.getText() + '\n' + sdf.format(cal.getTime()) + " " + Outras);
+                }
+            }
+        });
+       
+        BtnEnviar.setFont(new Font("Tahoma", Font.BOLD, 17));
+        BtnEnviar.setBounds(500, 401, 161, 34);
+        contentPane.add(BtnEnviar);
+       
+        JButton btnAnexo = new JButton("ANEXO");
+        btnAnexo.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		Anexo novo= new Anexo();
+        		novo.NewScreen();
+             
+        	}
+        });
+        btnAnexo.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        btnAnexo.setBounds(570, 19, 97, 25);
+        contentPane.add(btnAnexo);
+    }
 }

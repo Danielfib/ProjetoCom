@@ -1,6 +1,4 @@
-import java.io.Serializable;
-
-public class Pacote implements Serializable {
+public class Pacote {
 	int portOrigem;
 	int portDestino;
 	int numSeq;
@@ -9,12 +7,13 @@ public class Pacote implements Serializable {
 	boolean rst;
 	boolean syn;
 	boolean fin;
-	int janelaReceptor;
+	//janelaReceptor;
 	int checkSum;
 	byte[] dados;
 	
-	public Pacote(int portOrigem, int portDestino, int numSeq, int numConfirmacao, boolean ack, boolean rst,
-			boolean syn, boolean fin, int janelaReceptor, int checkSum, byte[] dados) {
+	public Pacote(int portOrigem, int portDestino, int numSeq,
+			int numConfirmacao, boolean ack, boolean rst, boolean syn,
+			boolean fin, int checkSum, byte[] msgBytes) {
 		this.portOrigem = portOrigem;
 		this.portDestino = portDestino;
 		this.numSeq = numSeq;
@@ -23,9 +22,13 @@ public class Pacote implements Serializable {
 		this.rst = rst;
 		this.syn = syn;
 		this.fin = fin;
-		this.janelaReceptor = janelaReceptor;
 		this.checkSum = checkSum;
-		this.dados = dados;
+		this.dados = msgBytes;
 	}
-
+	
+	//pendente
+	public int calcCheckSum() {
+		return 0;
+	}
+	
 }
