@@ -23,7 +23,7 @@ public class GDPClient {
 	
 	//apresentação de 3-vias
 	public boolean startConection() {
-		Pacote p = new Pacote(7, 0, 1, -1, false, false, true, false, 0, 0, "Teste".getBytes());
+		Pacote p = new Pacote(0, 0, 7, -1, false, false, true, false, 0, 0, "Teste".getBytes());
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
