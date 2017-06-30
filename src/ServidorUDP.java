@@ -26,12 +26,12 @@ public class ServidorUDP {
                 		false, false, false, false, 0, 0, null);
                 if(p.syn) {
                 	if(p.numConfirmacao == -1) {
-                		//envio 2 via
+                		//envio da 2 via
                 		synAck.numConfirmacao = p.numSeq + 1;
                 		synAck.numSeq = serverIsn;
                 		synAck.syn = true;
                 	} else {
-                		//envia 3 via
+                		//envia da 3 via
                 		synAck.numConfirmacao = p.numSeq + 1;
                 		synAck.numSeq = 8;
                 	}
@@ -43,10 +43,10 @@ public class ServidorUDP {
         			sendSocket.send(pkt);
                 } else {
                 	if(p.numConfirmacao == (serverIsn + 1)) {
-                		//recebeu 3 via
+                		//recebeu a 3 via
                 		System.out.println(p.ack);
                 	} else {
-                		//Dados aplicação
+                		//Dados da aplicação
                 	}
         		}
 			}
