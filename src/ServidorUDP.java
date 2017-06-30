@@ -1,29 +1,32 @@
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 
 public class ServidorUDP {
 
 	public static void main(String[] args) {
-	int porta = 2020; // ver de onde é
-
-		while (true) {
-			try {
-				DatagramSocket serverSocket = new DatagramSocket(porta);
-				// preparando buffer de recebimento da msg:
-				byte[] msg = new byte[256];
-				
-				// prepara o pacote de dados
-				DatagramPacket receivePacket = new DatagramPacket(msg, msg.length);
-				serverSocket.receive(receivePacket);				
-				
-				System.out.println("msg recebida: " + new String(receivePacket.getData()));
-				serverSocket.close();
-
-			} catch (IOException ioe) {
-				System.out.println("deu ruim no ServidorUDP");
+		try {
+			DatagramSocket serverSocket = new DatagramSocket(2020);
+			byte[] dados = new byte[200];
+			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
+			while(true) {
+				serverSocket.receive(pacote);
+				ByteArrayInputStream bao = new ByteArrayInputStream(pacote.getData());
+                ObjectInputStream ous = new ObjectInputStream(bao);
+                Pacote p = (Pacote) ous.readObject();
+                
+                if(p.syn) {
+                	if(p.numSeq == 7) {
+                		//primeira via e envia a segunda
+                	} else {
+                		//terceira via
+                	}
+                }
 			}
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 	}
 
