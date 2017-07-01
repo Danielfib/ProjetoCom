@@ -14,9 +14,9 @@ public class ServidorUDP implements Runnable {
 	private ArrayList<JFrame> listaJanelas = new ArrayList<>();
 	private ArrayList<String> listaIps = new ArrayList<>();
 	
-	public ServidorUDP( ArrayList<JFrame> oi, ArrayList<String> tudobom){
-		this.listaJanelas = oi;
-		this.listaIps = tudobom;
+	public ServidorUDP(ArrayList<JFrame> listaJanelas, ArrayList<String> listaIps) {
+		this.listaJanelas = listaJanelas;
+		this.listaIps = listaIps;
 	}
 
 	public void run() {
@@ -47,8 +47,8 @@ public class ServidorUDP implements Runnable {
 						System.out.println(p.ack);
 						
 						//aqui eh pra abrir a janela caso alguem dê "conversar" comigo:
-						Chat aeporra = new Chat(serverSocket.getInetAddress().getHostAddress(), 2020, serverSocket.getLocalAddress().getHostAddress());
-						listaJanelas.add(aeporra);
+						Chat chat = new Chat(serverSocket.getInetAddress().getHostAddress(), 2020, serverSocket.getLocalAddress().getHostAddress());
+						listaJanelas.add(chat);
 						listaIps.add(serverSocket.getLocalAddress().getHostAddress()); //é de p msm? ou de synack?
 					} else {
 						// Dados da aplicação
