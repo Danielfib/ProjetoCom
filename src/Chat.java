@@ -1,5 +1,4 @@
-import java.awt.EventQueue;
- 
+import java.awt.EventQueue; 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -13,6 +12,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+
  
 public class Chat extends JFrame {
  
@@ -22,6 +22,10 @@ public class Chat extends JFrame {
     private static int portaRemetente;
     private static String ipDestino;
     private static String ipRemetente;
+    
+    JTextArea textArea = new JTextArea();
+    
+    private static String msgTela = "";
 
  
    
@@ -29,7 +33,7 @@ public class Chat extends JFrame {
    
     String mensagem1, Outras;
     Calendar cal = Calendar.getInstance();
-    SimpleDateFormat sdf = new SimpleDateFormat("dd:MM:yyyy 'uma' EE 'Ã s' mm:ss:zz ' Voce diz: ' ");
+    SimpleDateFormat sdf = new SimpleDateFormat("dd:MM:yyyy 'uma' EE 'as' hh:mm:ss ' Voce diz: ' ");
    
     /**
      * Launch the application.
@@ -74,7 +78,7 @@ public class Chat extends JFrame {
        
        
        
-        JTextArea textArea = new JTextArea();
+        //JTextArea textArea = new JTextArea();
         scrollPane.setViewportView(textArea);
        
         JButton BtnEnviar = new JButton("ENVIAR");
@@ -85,10 +89,11 @@ public class Chat extends JFrame {
                 if( contador == 0){
                     contador++;
                     mensagem1 = Escrito.getText();
-                    textArea.setText(sdf.format(cal.getTime()) + " "+ mensagem1);  
+                    msgTela = sdf.format(cal.getTime()) + " " + mensagem1;
+                    textArea.setText(msgTela);  
                 }else{
-                    Outras = Escrito.getText();
-                    textArea.setText(textArea.getText() + '\n' + sdf.format(cal.getTime()) + " " + Outras);
+                    msgTela = msgTela + '\n' + sdf.format(cal.getTime()) + " " + Escrito.getText();
+                    textArea.setText(msgTela);
                 }
             }
         });
@@ -100,9 +105,8 @@ public class Chat extends JFrame {
         JButton btnAnexo = new JButton("ANEXO");
         btnAnexo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Anexo novo= new Anexo();
-                novo.NewScreen();
-             
+            	//Anexo anexo = new Anexo();
+            	//anexo.NewScreen();
             }
         });
         btnAnexo.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -113,6 +117,13 @@ public class Chat extends JFrame {
         lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
         lblNewLabel.setBounds(10, 19, 355, 25);
         contentPane.add(lblNewLabel);
+               
        
+    }
+    
+    public void addText(String msg) {
+    	msgTela = msgTela + '\n' + sdf.format(cal.getTime()) + " " + msg;
+    	textArea.setText(msgTela);
+    	
     }
 }

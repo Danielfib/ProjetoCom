@@ -11,10 +11,10 @@ import javax.swing.JFrame;
 
 public class ServidorUDP implements Runnable {
 	
-	private ArrayList<JFrame> listaJanelas = new ArrayList<>();
+	private ArrayList<Chat> listaJanelas = new ArrayList<>();
 	private ArrayList<String> listaIps = new ArrayList<>();
 	
-	public ServidorUDP(ArrayList<JFrame> listaJanelas, ArrayList<String> listaIps) {
+	public ServidorUDP(ArrayList<Chat> listaJanelas, ArrayList<String> listaIps) {
 		this.listaJanelas = listaJanelas;
 		this.listaIps = listaIps;
 	}
@@ -30,6 +30,13 @@ public class ServidorUDP implements Runnable {
 			while (true) {
 				serverSocket.receive(pacote);
 				Pacote p = deserializeObject(pacote.getData());
+				
+				//recebendo a mensagem, direcionando para o chat certo:
+				for (int c = 0; c < listaIps.size(); c++){
+					if (serverSocket.getInetAddress().getHostAddress().equals(listaIps.get(c))){ //se der bug, colocar ip do pacote
+						listaJanelas.get(c).addText(new String(p.dados));
+					}
+				}
 				
 				int serverIsn = -2;
 

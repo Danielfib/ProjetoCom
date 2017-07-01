@@ -12,7 +12,7 @@ import java.awt.event.ActionEvent;
 
 public class Interface {
 
-	private static ArrayList<JFrame> listaJanelas = new ArrayList<JFrame>();
+	private static ArrayList<Chat> listaJanelas = new ArrayList<Chat>();
 	private static ArrayList<String> listaIps = new ArrayList<String>();
 	//lista encadeada com as jframes das conversas
 	
