@@ -13,3 +13,5 @@
 /Pacote.class
 /ServidorUDP.class
 /Chat$3.class
+/GDPClient$ThreadEntrada.class
+/GDPClient$ThreadSaida.class

@@ -1,21 +1,50 @@
 
-//funções que n podem estar direto no cliente pq o cliente tem que estar ouvindo a Interface
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class GDPClient {
 	int sendBase;
 	int nextSeqNum;
-	int state;
-	DatagramSocket clientSocket;
+	byte[] pacote;
+	DatagramSocket entradaSocket;
+	DatagramSocket saidaSocket;
 
-	public GDPClient(int sendBase, int nextSeqNum, int state) throws SocketException {
+	public GDPClient(int sendBase, int nextSeqNum) throws SocketException {
 		this.sendBase = sendBase;
 		this.nextSeqNum = nextSeqNum;
-		this.state = state;
-		clientSocket = new DatagramSocket(2021);
+		entradaSocket = new DatagramSocket(2021);
+		saidaSocket = new DatagramSocket();
+		//janela
+		//Threads envio e recebimento
+		//variáveis de estado
 	}
+	
+	public class ThreadSaida implements Runnable {
+		
+		private DatagramSocket socketSaida;
+		private int portDestino;
+		private InetAddress ipDestino;
+		
+		public ThreadSaida(DatagramSocket socketSaida, int portDestino, String ipDestino) throws UnknownHostException {
+			this.socketSaida = socketSaida;
+			this.portDestino = portDestino;
+			this.ipDestino = InetAddress.getByName(ipDestino);
+		}
 
-	public void GDPsend(Pacote pacote, String addr, int porta) {
+		@Override
+		public void run() {
+		}
+		
+	}
+	
+	public class ThreadEntrada implements Runnable {
+
+		@Override
+		public void run() {
+			
+		}
+		
 	}
 }

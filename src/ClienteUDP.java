@@ -8,13 +8,24 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-public class ClienteUDP implements Runnable{
+public class ClienteUDP implements Runnable {
+	
+	String ipDestino;
+	int portDestino;
+	String msg;
+	
+	public ClienteUDP(String ipDestino, int portDestino, String msg) {
+		this.ipDestino = ipDestino;
+		this.portDestino = portDestino;
+		this.msg = msg;
+	}
 
 	public void run() {
 		DatagramSocket clientSocket;
 		try {
-			clientSocket = new DatagramSocket(2021);
+			clientSocket = new DatagramSocket();
 			startConection(clientSocket);
+			GDPClient gdp = new GDPClient(0, 0);
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
@@ -27,8 +38,8 @@ public class ClienteUDP implements Runnable{
 			
 			//enviando 1 via
 			byte msgTcp [] = serializeObject(p);
-			InetAddress ip = InetAddress.getByName("localhost");
-			DatagramPacket pkt = new DatagramPacket(msgTcp, msgTcp.length, ip, 2020);
+			InetAddress ip = InetAddress.getByName(ipDestino);
+			DatagramPacket pkt = new DatagramPacket(msgTcp, msgTcp.length, ip, portDestino);
 			clientSocket.send(pkt);
 			
 			//recebendo 2 via

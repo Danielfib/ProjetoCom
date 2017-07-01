@@ -22,7 +22,6 @@ public class ServidorUDP implements Runnable {
 	public void run() {
 		try {
 			DatagramSocket serverSocket = new DatagramSocket(2020);
-			DatagramSocket sendSocket = new DatagramSocket();
 			
 			byte[] dados = new byte[300];
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
@@ -30,13 +29,6 @@ public class ServidorUDP implements Runnable {
 			while (true) {
 				serverSocket.receive(pacote);
 				Pacote p = deserializeObject(pacote.getData());
-				
-				//recebendo a mensagem, direcionando para o chat certo:
-				for (int c = 0; c < listaIps.size(); c++){
-					if (serverSocket.getInetAddress().getHostAddress().equals(listaIps.get(c))){ //se der bug, colocar ip do pacote
-						listaJanelas.get(c).addText(new String(p.dados));
-					}
-				}
 				
 				int serverIsn = -2;
 
@@ -48,17 +40,20 @@ public class ServidorUDP implements Runnable {
 
 					serverSocket.send(pkt);
 				} else {
-					// recebeu a 3 via
 					if (p.numConfirmacao == (serverIsn + 1)) {
 						// recebeu a 3 via
-						System.out.println(p.ack);
 						
 						//aqui eh pra abrir a janela caso alguem dê "conversar" comigo:
 						Chat chat = new Chat(serverSocket.getInetAddress().getHostAddress(), 2020, serverSocket.getLocalAddress().getHostAddress());
 						listaJanelas.add(chat);
 						listaIps.add(serverSocket.getLocalAddress().getHostAddress()); //é de p msm? ou de synack?
 					} else {
-						// Dados da aplicação
+						//recebendo a mensagem, direcionando para o chat certo:
+						for (int c = 0; c < listaIps.size(); c++){
+							if (serverSocket.getInetAddress().getHostAddress().equals(listaIps.get(c))){ //se der bug, colocar ip do pacote
+								listaJanelas.get(c).addText(new String(p.dados));
+							}
+						}
 					}
 				}
 			}
