@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
  
+=======
+
+import java.awt.EventQueue; 
+>>>>>>> 82a038c7a2e508d03bbd33ba6c35b733e8ceeab2
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
