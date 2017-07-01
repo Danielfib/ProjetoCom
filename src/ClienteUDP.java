@@ -1,10 +1,16 @@
 import java.net.SocketException;
 
-public class ClienteUDP {
+public class ClienteUDP implements Runnable{
 
-	public static void main(String[] args) throws SocketException {
-		GDPClient g = new GDPClient(0, 0, 0);
-		g.startConection();
+	public void run() {
+		try {
+			GDPClient g;
+			g = new GDPClient(0, 0, 0);
+			g.startConection();
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
