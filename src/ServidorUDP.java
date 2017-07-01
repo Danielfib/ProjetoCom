@@ -5,24 +5,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
 public class ServidorUDP implements Runnable {
 	
-<<<<<<< HEAD
 	private ArrayList<JFrame> listaJanelas = new ArrayList<>();
 	private ArrayList<String> listaIps = new ArrayList<>();
 	
-	public ServidorUDP (ArrayList<JFrame> oi, ArrayList<String> tudobom){
-=======
-	private ArrayList<JFrame> listaJanelas = new ArrayList<JFrame>();
-	private ArrayList<String> listaIps = new ArrayList<String>();
-	
-	public ServidorUDP ( ArrayList<JFrame> oi, ArrayList<String> tudobom){
->>>>>>> 82a038c7a2e508d03bbd33ba6c35b733e8ceeab2
+	public ServidorUDP( ArrayList<JFrame> oi, ArrayList<String> tudobom){
 		this.listaJanelas = oi;
 		this.listaIps = tudobom;
 	}
@@ -30,11 +22,8 @@ public class ServidorUDP implements Runnable {
 	public void run() {
 		try {
 			DatagramSocket serverSocket = new DatagramSocket(2020);
-<<<<<<< HEAD
-=======
 			DatagramSocket sendSocket = new DatagramSocket();
 			
->>>>>>> 82a038c7a2e508d03bbd33ba6c35b733e8ceeab2
 			byte[] dados = new byte[300];
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
 			
@@ -54,11 +43,8 @@ public class ServidorUDP implements Runnable {
 				} else {
 					// recebeu a 3 via
 					if (p.numConfirmacao == (serverIsn + 1)) {
-<<<<<<< HEAD
-=======
 						// recebeu a 3 via
 						System.out.println(p.ack);
->>>>>>> 82a038c7a2e508d03bbd33ba6c35b733e8ceeab2
 						
 						//aqui eh pra abrir a janela caso alguem dê "conversar" comigo:
 						Chat aeporra = new Chat(serverSocket.getInetAddress().getHostAddress(), 2020, serverSocket.getLocalAddress().getHostAddress());
