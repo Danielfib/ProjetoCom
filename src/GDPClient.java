@@ -12,25 +12,32 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class GDPClient {
+	
 	int sendBase;
 	int nextSeqNum;
+	
 	String ipDestino;
 	int portDestino;
+	
 	static int tamanhoJanela = 2;
 	static final int TAMANHO_PACOTE = 100;
 
 	Pacote pacote;
 	ArrayList<byte[]> listPacotes;
+	
 	DatagramSocket entradaSocket;
 	DatagramSocket saidaSocket;
 
 	public GDPClient(String ipDestino, int portDestino) throws SocketException {
+		
 		this.sendBase = 0;
 		this.nextSeqNum = 0;
+		
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
 
 		listPacotes = new ArrayList<>(tamanhoJanela);
+		
 		try {
 			entradaSocket = new DatagramSocket(2021);
 			saidaSocket = new DatagramSocket();
@@ -40,6 +47,7 @@ public class GDPClient {
 
 			threadIn.start();
 			threadOut.start();
+			
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -89,10 +97,8 @@ public class GDPClient {
 
 		@Override
 		public void run() {
-			int seq = 0;
 			try {
 				while (true) {
-					pacote = new Pacote(0, 0, seq, 0, false, false, false, false, 0, 0, ("Oi " + seq).getBytes());
 					if(pacote.numSeq >= sendBase) {
 						byte[] segmento = serializeObject(pacote);
 						if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
@@ -108,7 +114,6 @@ public class GDPClient {
 						}
 					}
 					sleep(7);
-					seq++;
 				}
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
