@@ -10,8 +10,9 @@ import java.net.SocketException;
 
 public class ClienteUDP implements Runnable {
 	
-	String ipDestino;
-	int portDestino;
+	private String ipDestino;
+	private int portDestino;
+	private Chat chat;
 	
 	public ClienteUDP(String ipDestino, int portDestino) {
 		this.ipDestino = ipDestino;
@@ -23,7 +24,7 @@ public class ClienteUDP implements Runnable {
 		try {
 			clientSocket = new DatagramSocket();
 			startConection(clientSocket);
-			GDPClient gdp = new GDPClient(0, 0);
+			GDPClient gdp = new GDPClient(ipDestino, portDestino);
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
@@ -57,6 +58,7 @@ public class ClienteUDP implements Runnable {
 			clientSocket.send(pkt);
 			
 			//Cria Chat
+			chat = new Chat(ipDestino, portDestino, "");
 			
 		} catch(IOException e) {
 			e.printStackTrace();
@@ -75,7 +77,7 @@ public class ClienteUDP implements Runnable {
 		return null;
 	}
 	
-	public static byte[] serializeObject(Pacote p) {
+	public byte[] serializeObject(Pacote p) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos;
 		byte msgTcp[] = null;
