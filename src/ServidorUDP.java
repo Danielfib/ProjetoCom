@@ -5,14 +5,20 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JFrame;
+import javax.xml.ws.EndpointReference;
 
 public class ServidorUDP implements Runnable {
 	
 	private ArrayList<Chat> listaJanelas = new ArrayList<>();
 	private ArrayList<String> listaIps = new ArrayList<>();
+	static final int TAM_PKT = 100;
+	static final int CABECALHO = 28;//se mudar, só mudar aqui
 	
 	public ServidorUDP(ArrayList<Chat> listaJanelas, ArrayList<String> listaIps) {
 		this.listaJanelas = listaJanelas;
@@ -20,23 +26,26 @@ public class ServidorUDP implements Runnable {
 	}
 
 	public void run() {
+		int proxNumSeq = 0;
+		int ultimoNumSeq = -1;
+		
 		try {
 			DatagramSocket serverSocket = new DatagramSocket(2020);
 			DatagramSocket sendSocket = new DatagramSocket();
 			
-			byte[] dados = new byte[300];
+			String ipDestino = serverSocket.getInetAddress().getHostAddress();
+			InetAddress ipDestinoInet = serverSocket.getInetAddress();
+			String ipRemetente = serverSocket.getLocalAddress().getHostAddress();
+			int porta = 2020;
+			
+			byte[] dados = new byte[TAM_PKT];
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
 			
+			//TRATAR PARA SE FOR UM ARQUIVO E N UMA MSG
+			
 			while (true) {
-				serverSocket.receive(pacote);
-				Pacote p = deserializeObject(pacote.getData());
-				
-				//recebendo a mensagem, direcionando para o chat certo:
-				for (int c = 0; c < listaIps.size(); c++){
-					if (serverSocket.getInetAddress().getHostAddress().equals(listaIps.get(c))){ //se der bug, colocar ip do pacote
-						listaJanelas.get(c).addText(new String(p.dados));
-					}
-				}
+				serverSocket.receive(pacote);				
+				Pacote p = deserializeObject(pacote.getData());				
 				
 				int serverIsn = -2;
 
@@ -54,11 +63,40 @@ public class ServidorUDP implements Runnable {
 						System.out.println(p.ack);
 						
 						//aqui eh pra abrir a janela caso alguem dê "conversar" comigo:
-						Chat chat = new Chat(serverSocket.getInetAddress().getHostAddress(), 2020, serverSocket.getLocalAddress().getHostAddress());
+						Chat chat = new Chat(ipDestino, porta, ipRemetente);
 						listaJanelas.add(chat);
-						listaIps.add(serverSocket.getLocalAddress().getHostAddress()); //é de p msm? ou de synack?
+						listaIps.add(ipRemetente); //é de p msm? ou de synack?
 					} else {
 						// Dados da aplicação
+						//recebendo a mensagem, direcionando para o chat certo:
+						for (int c = 0; c < listaIps.size(); c++){
+							if (serverSocket.getInetAddress().getHostAddress().equals(listaIps.get(c))){ //se der bug, colocar ip do pacote
+								listaJanelas.get(c).addText(new String(p.dados));
+							}
+						}
+						//int numSeq = ByteBuffer.wrap(Arrays.copyOfRange(dados, 0, CABECALHO)).getInt();
+						int numSeq = p.numSeq;
+						
+						//se o pacote recebido estiver em ordem:
+						if (numSeq == proxNumSeq){
+//							//enviar ack FIM caso seja o ultimo pacote (sem dados)
+//							if (pacote.getLength() == CABECALHO){
+//								byte[] ackFim = criarPacote(-2); //administrar o uso disso pra reconhecimento de ACK final
+//								sendSocket.send(new DatagramPacket(ackFim, ackFim.length, ipDestinoInet, porta));
+//								//boolean de transf = true
+//							} else {
+							proxNumSeq = numSeq + (TAM_PKT - CABECALHO);
+							byte[] ack = criarPacote(proxNumSeq);
+							sendSocket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, porta));
+							System.out.println("ack enviado: " + ack.toString()); //debug
+							
+							ultimoNumSeq = numSeq;
+						} else {//se pacote estiver fora de ordem, manda o duplicado
+							byte[] ackDuprikred = criarPacote(ultimoNumSeq);
+							sendSocket.send(new DatagramPacket(ackDuprikred, ackDuprikred.length, ipDestinoInet, porta));
+							System.out.println("ack duplicado enviado: " + ultimoNumSeq);
+							
+						}
 					}
 				}
 			}
@@ -80,6 +118,16 @@ public class ServidorUDP implements Runnable {
 			e.printStackTrace();
 		}
 		return msgTcp;
+	}
+	
+	public byte[] criarPacote(int numAck){
+		//cria um array de bytes do numero do ack
+		byte[] bytesAckNumber = ByteBuffer.allocate(4).putInt(numAck).array();
+		ByteBuffer buffer = ByteBuffer.allocate(4);
+		buffer.put(bytesAckNumber);
+		return buffer.array();
+		//cria um pacote em formato array de bytes com o inteiro passado
+		
 	}
 	
 	public Pacote deserializeObject(byte[] dado) {

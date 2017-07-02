@@ -16,6 +16,8 @@ public class GDPClient {
 		clientSocket = new DatagramSocket(2021);
 	}
 
+	
+	
 	public void GDPsend(Pacote pacote, String addr, int porta) {
 	}
 }

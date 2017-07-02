@@ -14,6 +14,8 @@ public class ClienteUDP implements Runnable{
 		DatagramSocket clientSocket;
 		try {
 			clientSocket = new DatagramSocket(2021);
+			DatagramSocket socketSaida = new DatagramSocket();
+			
 			startConection(clientSocket);
 		} catch (SocketException e) {
 			e.printStackTrace();
