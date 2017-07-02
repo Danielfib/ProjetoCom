@@ -12,12 +12,10 @@ public class ClienteUDP implements Runnable {
 	
 	String ipDestino;
 	int portDestino;
-	String msg;
 	
-	public ClienteUDP(String ipDestino, int portDestino, String msg) {
+	public ClienteUDP(String ipDestino, int portDestino) {
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
-		this.msg = msg;
 	}
 
 	public void run() {

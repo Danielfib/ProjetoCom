@@ -35,15 +35,44 @@ public class GDPClient {
 
 		@Override
 		public void run() {
+			while(true) {
+				/*
+				 * se a janela não estiver cheia {
+				 * 		se o temporizador estiver parado -> inicia temporizador
+				 * 		envia o pacote e atualiza o nextSeqNum
+				 * } senão {
+				 * 		guarda msg em algum buffer e espera liberar espaço na janela pra enviar
+				 * }
+				 * se o temporizador expirou {
+				 * 		retransmite o pacote ainda não reconhecido com o menor numSeq
+				 * 		inicia temporizador
+				 * }*/
+			}
 		}
 		
 	}
 	
 	public class ThreadEntrada implements Runnable {
+		
+		private DatagramSocket socketEntrada;
+		
+		public ThreadEntrada(DatagramSocket socketEntrada) {
+			this.socketEntrada = socketEntrada;
+		}
 
 		@Override
 		public void run() {
-			
+			while(true) {
+				/*
+				 * recebe ACK
+				 * se ack não for duplicado {
+				 * 		atualiza a janela
+				 * 		se tiver algum pacote não reconhecido -> inicia o temporizador
+				 * } senão {
+				 * 		retransmissão rápida
+				 * }
+				 * */
+			}
 		}
 		
 	}
