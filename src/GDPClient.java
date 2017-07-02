@@ -46,11 +46,6 @@ public class GDPClient {
 		// variáveis de estado
 	}
 
-<<<<<<< HEAD
-	
-	
-	public void GDPsend(Pacote pacote, String addr, int porta) {
-=======
 	public class ThreadSaida extends Thread {
 
 		private DatagramSocket socketSaida;
@@ -151,6 +146,5 @@ public class GDPClient {
 			}
 		}
 
->>>>>>> 68c792bbc22c022c35aad3c47732aa22a483b806
 	}
 }

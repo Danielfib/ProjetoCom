@@ -22,13 +22,7 @@ public class ClienteUDP implements Runnable {
 	public void run() {
 		DatagramSocket clientSocket;
 		try {
-<<<<<<< HEAD
-			clientSocket = new DatagramSocket(2021);
-			DatagramSocket socketSaida = new DatagramSocket();
-			
-=======
 			clientSocket = new DatagramSocket();
->>>>>>> 68c792bbc22c022c35aad3c47732aa22a483b806
 			startConection(clientSocket);
 			GDPClient gdp = new GDPClient(ipDestino, portDestino);
 		} catch (SocketException e) {
