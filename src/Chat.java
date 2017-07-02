@@ -105,8 +105,8 @@ public class Chat extends JFrame {
         JButton btnAnexo = new JButton("ANEXO");
         btnAnexo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	//Anexo anexo = new Anexo();
-            	//anexo.NewScreen();
+            	Anexo anexo = new Anexo();
+            	anexo.NewScreen();
             }
         });
         btnAnexo.setFont(new Font("Tahoma", Font.PLAIN, 15));

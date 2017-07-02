@@ -13,5 +13,10 @@
 /Pacote.class
 /ServidorUDP.class
 /Chat$3.class
+<<<<<<< HEAD
 /teste.class
 /Teste.class
+=======
+/GDPClient$ThreadEntrada.class
+/GDPClient$ThreadSaida.class
+>>>>>>> 68c792bbc22c022c35aad3c47732aa22a483b806

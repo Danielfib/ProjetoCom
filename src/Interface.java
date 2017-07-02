@@ -4,11 +4,14 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Color;
 
 public class Interface {
 
@@ -17,9 +20,8 @@ public class Interface {
 	//lista encadeada com as jframes das conversas
 	
 	public static JFrame frame;
-	public static JTextField ipServidor;
 	public static JTextField ipDestinatario;
-	public static JTextField portaDestinario;
+	private JTextField ipServidor;
 
 	/**
 	 * Launch the application.
@@ -49,58 +51,60 @@ public class Interface {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	
 	private void initialize() {
 		frame = new JFrame();
 		frame.getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 17));
-		frame.setBounds(100, 100, 604, 528);
+		frame.setBounds(100, 100, 516, 437);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
-		JLabel lblDigiteAquiO = new JLabel("Digite aqui o IP do servidor que voc\u00EA quer se conectar ");
-		lblDigiteAquiO.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblDigiteAquiO.setBounds(44, 73, 570, 57);
-		frame.getContentPane().add(lblDigiteAquiO);
-
 		JLabel label = new JLabel("Digite aqui o IP do amigo que quer conversar ");
-		label.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		label.setBounds(44, 186, 570, 57);
+		label.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		label.setBounds(18, 79, 570, 57);
 		frame.getContentPane().add(label);
-
-		ipServidor = new JTextField();
-		ipServidor.setBounds(44, 137, 234, 37);
-		frame.getContentPane().add(ipServidor);
-		ipServidor.setColumns(10);
 
 		ipDestinatario = new JTextField();
 		ipDestinatario.setColumns(10);
-		ipDestinatario.setBounds(44, 247, 234, 37);
+		ipDestinatario.setBounds(18, 140, 234, 37);
 		frame.getContentPane().add(ipDestinatario);
 
-		portaDestinario = new JTextField();
-		portaDestinario.setColumns(10);
-		portaDestinario.setBounds(44, 356, 234, 37);
-		frame.getContentPane().add(portaDestinario);
-
 		JButton btnConversar = new JButton("CONVERSAR");
+		
 		btnConversar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Chat novo = new Chat(ipDestinatario.getText(), Integer.parseInt(portaDestinario.getText()) , ipServidor.getText());
-				novo.NewScreen();
+				if(ipServidor.getText().equals("") || ipDestinatario.getText().equals(""))  {
+				    JOptionPane.showMessageDialog(null, "Você não completou algum campo");
+				}else {
+					Chat novo = new Chat(ipDestinatario.getText(), 2021 , ipServidor.getText());
+					novo.NewScreen();
+				}
+				
+				
 			}
 		});
 		btnConversar.setFont(new Font("Tahoma", Font.BOLD, 17));
-		btnConversar.setBounds(201, 423, 192, 43);
+		btnConversar.setBounds(158, 323, 156, 43);
 		frame.getContentPane().add(btnConversar);
-
+		
+		
 		JLabel lblNewLabel = new JLabel("Zapizapi");
 		lblNewLabel.setFont(new Font("Lucida Grande", Font.BOLD | Font.ITALIC, 25));
 		lblNewLabel.setBounds(224, 18, 120, 43);
 		frame.getContentPane().add(lblNewLabel);
-
-
-		JLabel label_1 = new JLabel("Digite aqui a porta de acesso do seu amigo");
-		label_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		label_1.setBounds(44, 295, 570, 57);
-		frame.getContentPane().add(label_1);
+		
+		JLabel label_2 = new JLabel("Digite o IP do servidor central ");
+		label_2.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		label_2.setBounds(18, 188, 570, 57);
+		frame.getContentPane().add(label_2);
+		
+		ipServidor = new JTextField();
+		ipServidor.setColumns(10);
+		ipServidor.setBounds(18, 241, 234, 37);
+		frame.getContentPane().add(ipServidor);
+		
+	
+		
+		
 	}
 }
