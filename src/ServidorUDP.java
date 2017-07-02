@@ -33,9 +33,6 @@ public class ServidorUDP implements Runnable {
 			DatagramSocket serverSocket = new DatagramSocket(2020);
 			DatagramSocket sendSocket = new DatagramSocket();
 			
-			String ipDestino = serverSocket.getInetAddress().getHostAddress();
-			InetAddress ipDestinoInet = serverSocket.getInetAddress();
-			String ipRemetente = serverSocket.getLocalAddress().getHostAddress();
 			int porta = 2020;
 			
 			byte[] dados = new byte[TAM_PKT];
@@ -45,6 +42,9 @@ public class ServidorUDP implements Runnable {
 			
 			while (true) {
 				serverSocket.receive(pacote);				
+				String ipDestino = serverSocket.getInetAddress().getHostAddress();
+				InetAddress ipDestinoInet = serverSocket.getInetAddress();
+				String ipRemetente = serverSocket.getLocalAddress().getHostAddress();
 				Pacote p = deserializeObject(pacote.getData());				
 				
 				int serverIsn = -2;
