@@ -46,80 +46,78 @@ public class GDPClient {
 		// variáveis de estado
 	}
 
-	public void GDPsend(Pacote pacote, String addr, int porta) {
 
-		public class ThreadSaida extends Thread {
 
-			private DatagramSocket socketSaida;
-			private int portDestino;
-			private InetAddress ipDestino;
+	public class ThreadSaida extends Thread {
 
-			public ThreadSaida(DatagramSocket socketSaida, int portDestino, String ipDestino)
-					throws UnknownHostException {
-				this.socketSaida = socketSaida;
-				this.portDestino = portDestino;
-				this.ipDestino = InetAddress.getByName(ipDestino);
-			}
+		private DatagramSocket socketSaida;
+		private int portDestino;
+		private InetAddress ipDestino;
 
-			public Pacote deserializeObject(byte[] dado) {
-				ByteArrayInputStream bao = new ByteArrayInputStream(dado);
-				ObjectInputStream ous;
-				try {
-					ous = new ObjectInputStream(bao);
-					return (Pacote) ous.readObject();
-				} catch (IOException | ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-
-			public byte[] serializeObject(Pacote p) {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ObjectOutputStream oos;
-				byte msgTcp[] = null;
-				try {
-					oos = new ObjectOutputStream(baos);
-					oos.writeObject(p);
-					oos.close();
-					msgTcp = baos.toByteArray();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return msgTcp;
-			}
-
-			@Override
-			public void run() {
-				int seq = 0;
-				try {
-					while (true) {
-						pacote = new Pacote(0, 0, seq, 0, false, false, false, false, 0, 0, ("Oi " + seq).getBytes());
-						if (pacote.numSeq >= sendBase) {
-							byte[] segmento = serializeObject(pacote);
-							if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
-								if (nextSeqNum == sendBase) {
-									// inicia timer
-								}
-
-								listPacotes.add(segmento);
-								socketSaida.send(new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
-								nextSeqNum += TAMANHO_PACOTE;
-							} else {
-								listPacotes.add(segmento);
-							}
-						}
-						sleep(7);
-						seq++;
-					}
-				} catch (IOException | InterruptedException e) {
-					e.printStackTrace();
-				} finally {
-					// mata thread do timer
-					socketSaida.close();
-				}
-			}
-
+		public ThreadSaida(DatagramSocket socketSaida, int portDestino, String ipDestino) throws UnknownHostException {
+			this.socketSaida = socketSaida;
+			this.portDestino = portDestino;
+			this.ipDestino = InetAddress.getByName(ipDestino);
 		}
+		
+		public Pacote deserializeObject(byte[] dado) {
+			ByteArrayInputStream bao = new ByteArrayInputStream(dado);
+			ObjectInputStream ous;
+			try {
+				ous = new ObjectInputStream(bao);
+				return (Pacote) ous.readObject();
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		public byte[] serializeObject(Pacote p) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos;
+			byte msgTcp[] = null;
+			try {
+				oos = new ObjectOutputStream(baos);
+				oos.writeObject(p);
+				oos.close();
+				msgTcp = baos.toByteArray();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return msgTcp;
+		}
+
+		@Override
+		public void run() {
+			int seq = 0;
+			try {
+				while (true) {
+					pacote = new Pacote(0, 0, seq, 0, false, false, false, false, 0, 0, ("Oi " + seq).getBytes());
+					if(pacote.numSeq >= sendBase) {
+						byte[] segmento = serializeObject(pacote);
+						if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
+							if (nextSeqNum == sendBase) {
+								// inicia timer
+							}
+	
+							listPacotes.add(segmento);
+							socketSaida.send(new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
+							nextSeqNum += TAMANHO_PACOTE;
+						} else {
+							listPacotes.add(segmento);
+						}
+					}
+					sleep(7);
+					seq++;
+				}
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+			} finally {
+				//mata thread do timer
+				socketSaida.close();
+			}
+		}
+
 	}
 
 	public class ThreadEntrada extends Thread {
@@ -138,10 +136,10 @@ public class GDPClient {
 				try {
 					socketEntrada.receive(packet);
 					int numAck = 0;
-					// ACK duplicado
-					if (sendBase == numAck + TAMANHO_PACOTE) {
+					//ACK duplicado
+					if(sendBase == numAck + TAMANHO_PACOTE) {
 						nextSeqNum = sendBase;
-					} else { // ACK normal
+					} else { //ACK normal
 						sendBase = numAck + TAMANHO_PACOTE;
 					}
 				} catch (IOException e) {
@@ -150,5 +148,7 @@ public class GDPClient {
 			}
 		}
 
+
 	}
+
 }
