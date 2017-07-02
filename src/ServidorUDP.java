@@ -30,13 +30,10 @@ public class ServidorUDP implements Runnable {
 		int ultimoNumSeq = -1;
 		
 		try {
-			DatagramSocket serverSocket = new DatagramSocket(2020);
+			int porta = 2020;
+			DatagramSocket serverSocket = new DatagramSocket(porta);
 			DatagramSocket sendSocket = new DatagramSocket();
 			
-			String ipDestino = serverSocket.getInetAddress().getHostAddress();
-			InetAddress ipDestinoInet = serverSocket.getInetAddress();
-			String ipRemetente = serverSocket.getLocalAddress().getHostAddress();
-			int porta = 2020;
 			
 			byte[] dados = new byte[TAM_PKT];
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
@@ -44,7 +41,12 @@ public class ServidorUDP implements Runnable {
 			//TRATAR PARA SE FOR UM ARQUIVO E N UMA MSG
 			
 			while (true) {
-				serverSocket.receive(pacote);				
+				serverSocket.receive(pacote);			
+				
+				String ipDestino = serverSocket.getInetAddress().getHostAddress();
+				InetAddress ipDestinoInet = serverSocket.getInetAddress();
+				String ipRemetente = serverSocket.getLocalAddress().getHostAddress();
+				
 				Pacote p = deserializeObject(pacote.getData());				
 				
 				int serverIsn = -2;
