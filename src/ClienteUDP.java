@@ -24,9 +24,7 @@ public class ClienteUDP implements Runnable {
 		try {
 
 			clientSocket = new DatagramSocket(2021);
-			DatagramSocket socketSaida = new DatagramSocket();			
 
-			clientSocket = new DatagramSocket();
 			startConection(clientSocket);
 			GDPClient gdp = new GDPClient(ipDestino, portDestino);
 		} catch (SocketException e) {
@@ -50,8 +48,10 @@ public class ClienteUDP implements Runnable {
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
 			clientSocket.receive(pacote);
 			Pacote receiveP = deserializeObject(pacote.getData());
+			System.out.println(new String(receiveP.dados));
 			
 			//enviando 3 via
+			p.dados = "Teste 3".getBytes();
 			p.syn = false;
 			p.numSeq = receiveP.numConfirmacao + 1;
 			p.numConfirmacao = receiveP.numSeq + 1;
