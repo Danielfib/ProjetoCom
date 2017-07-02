@@ -75,12 +75,12 @@ public class interfaceServer extends JFrame {
 		contentPane.add(btnCadastrarUsurio);
 
 		String[] legenda = { "Status","Nome", "IP","Porta" };
-		ArrayList<>
+		//ArrayList<>
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(10, 65, 548, 265);
 		contentPane.add(scrollPane_1);
-		table = new JTable(dados, legenda);
+		//table = new JTable(dados, legenda);
 		scrollPane_1.setViewportView(table);
 		table.setForeground(Color.DARK_GRAY);
 		table.setBackground(Color.WHITE);
