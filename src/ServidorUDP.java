@@ -31,6 +31,7 @@ public class ServidorUDP implements Runnable {
 		
 		try {
 			DatagramSocket serverSocket = new DatagramSocket(2020);
+			DatagramSocket sendSocket = new DatagramSocket();
 			
 			String ipDestino = serverSocket.getInetAddress().getHostAddress();
 			InetAddress ipDestinoInet = serverSocket.getInetAddress();
@@ -43,13 +44,8 @@ public class ServidorUDP implements Runnable {
 			//TRATAR PARA SE FOR UM ARQUIVO E N UMA MSG
 			
 			while (true) {
-<<<<<<< HEAD
 				serverSocket.receive(pacote);				
 				Pacote p = deserializeObject(pacote.getData());				
-=======
-				serverSocket.receive(pacote);
-				Pacote p = deserializeObject(pacote.getData());
->>>>>>> 68c792bbc22c022c35aad3c47732aa22a483b806
 				
 				int serverIsn = -2;
 
@@ -69,17 +65,13 @@ public class ServidorUDP implements Runnable {
 						listaJanelas.add(chat);
 						listaIps.add(ipRemetente); //é de p msm? ou de synack?
 					} else {
-<<<<<<< HEAD
 						// Dados da aplicação
-=======
->>>>>>> 68c792bbc22c022c35aad3c47732aa22a483b806
 						//recebendo a mensagem, direcionando para o chat certo:
 						for (int c = 0; c < listaIps.size(); c++){
 							if (serverSocket.getInetAddress().getHostAddress().equals(listaIps.get(c))){ //se der bug, colocar ip do pacote
 								listaJanelas.get(c).addText(new String(p.dados));
 							}
 						}
-<<<<<<< HEAD
 						//int numSeq = ByteBuffer.wrap(Arrays.copyOfRange(dados, 0, CABECALHO)).getInt();
 						int numSeq = p.numSeq;
 						
@@ -103,8 +95,6 @@ public class ServidorUDP implements Runnable {
 							System.out.println("ack duplicado enviado: " + ultimoNumSeq);
 							
 						}
-=======
->>>>>>> 68c792bbc22c022c35aad3c47732aa22a483b806
 					}
 				}
 			}
