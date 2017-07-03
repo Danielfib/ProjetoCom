@@ -15,10 +15,10 @@ public class ServidorUDP implements Runnable {
 
 	private ArrayList<Chat> listaJanelas = new ArrayList<>();
 	private ArrayList<String> listaIps = new ArrayList<>();
-	
-	Comparator comparador = new NumSeqComparator();	
+
+	Comparator comparador = new NumSeqComparator();
 	private PriorityQueue<Pacote> PQPacotes = new PriorityQueue<Pacote>(comparador);
-	
+
 	static final int TAM_PKT = 500;
 	static final int CABECALHO = 28;// se mudar, só mudar aqui
 
@@ -49,20 +49,20 @@ public class ServidorUDP implements Runnable {
 				String ipRemetente = serverSocket.getLocalAddress().getHostAddress();
 
 				int portaDestino = pacote.getPort();
-				
+
 				Pacote p = deserializeObject(pacote.getData());
-				PQPacotes.add(p);//adiciona no buffer
+				PQPacotes.add(p);// adiciona no buffer
 
 				int serverIsn = -2;
 
 				if (p.syn) {
-					Pacote synAck = new Pacote(porta, portaDestino, serverIsn, p.numSeq + 1, false, false, true, false, 0, 0,
-							"Teste 2".getBytes());
+					Pacote synAck = new Pacote(porta, portaDestino, serverIsn, p.numSeq + 1, false, false, true, false,
+							0, 0, "Teste 2".getBytes());
 
 					byte msgTcp[] = serializeObject(synAck);
 					DatagramPacket pkt = new DatagramPacket(msgTcp, msgTcp.length, ipDestinoInet, portaDestino);
 
-					System.out.println(new String(p.dados));
+					System.out.println(ipDestinoInet.getHostAddress() + " " + portaDestino + " " + new String(p.dados));
 
 					serverSocket.send(pkt);
 					PQPacotes.remove();
@@ -70,27 +70,32 @@ public class ServidorUDP implements Runnable {
 					if (p.numConfirmacao == (serverIsn + 1)) {
 						// recebeu a 3 via
 						System.out.println(new String(p.dados));
-						
-						//new ClienteUDP(ipDestino, portaDestino).start();
+
+						// new ClienteUDP(ipDestino, portaDestino).start();
 
 						// aqui eh pra abrir a janela caso alguem dê "conversar"
 						// comigo:
 						Chat chat = new Chat(ipDestino, p.portOrigem);
 						chat.NewScreen(chat);
-						
+
 						listaJanelas.add(chat);
 						listaIps.add(ipRemetente); // é de p msm? ou de synack?
-						
+
 						chat.NewScreen(chat);
-						
+
 					} else {
 						// Dados da aplicação
 						// recebendo a mensagem, direcionando para o chat certo:
 						for (int c = 0; c < listaIps.size(); c++) {
 							System.out.println(c);
-							if (ipDestino.equals(listaIps.get(c))) { // se der bug, colocar ip do pacote
+							if (ipDestino.equals(listaIps.get(c))) { // se der
+																		// bug,
+																		// colocar
+																		// ip do
+																		// pacote
 								listaJanelas.get(c).addText(new String(PQPacotes.peek().dados));
-								//listaJanelas.get(c).addText(new String(p.dados));
+								// listaJanelas.get(c).addText(new
+								// String(p.dados));
 								System.out.println(new String(p.dados));
 							}
 						}

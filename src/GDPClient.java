@@ -39,7 +39,7 @@ public class GDPClient {
 		listPacotes = new ArrayList<>(tamanhoJanela);
 
 		try {
-			entradaSocket = new DatagramSocket(2021);
+			entradaSocket = new DatagramSocket(2045);
 			saidaSocket = new DatagramSocket();
 
 			ThreadEntrada threadIn = new ThreadEntrada(entradaSocket);

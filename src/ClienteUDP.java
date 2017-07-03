@@ -19,7 +19,7 @@ public class ClienteUDP extends Thread {
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
 		try {
-			clientSocket = new DatagramSocket(2010); //porta do meu cliente
+			clientSocket = new DatagramSocket(2011); //porta do meu cliente
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
@@ -32,7 +32,7 @@ public class ClienteUDP extends Thread {
 	}
 
 	public void startConection() {
-		Pacote p = new Pacote(2010, portDestino, 7, -1, false, false, true, false, 0, 0, "Teste".getBytes());
+		Pacote p = new Pacote(2021, portDestino, 7, -1, false, false, true, false, 0, 0, "Teste".getBytes());
 
 		try {
 
