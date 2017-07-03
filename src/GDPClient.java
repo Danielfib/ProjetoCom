@@ -22,7 +22,7 @@ public class GDPClient {
 	static int tamanhoJanela = 2;
 	static final int TAMANHO_PACOTE = 100;
 
-	Pacote pacote;
+	String pacote;
 	ArrayList<byte[]> listPacotes;
 
 	DatagramSocket entradaSocket;
@@ -96,9 +96,12 @@ public class GDPClient {
 		@Override
 		public void run() {
 			try {
+				int numSeqPacotes = 0;
 				while (true) {
 					byte[] segmento = null;
-					if (pacote.numSeq >= sendBase) {
+					Pacote p = new Pacote(socketSaida.getLocalPort(), portDestino, numSeqPacotes,
+							numSeqPacotes + TAMANHO_PACOTE, false, false, false, false, 0, 0, pacote.getBytes());
+					if (p.numSeq >= sendBase) {
 						if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
 							if (nextSeqNum == sendBase) {
 								// inicia timer
@@ -106,11 +109,12 @@ public class GDPClient {
 							if ((nextSeqNum / TAMANHO_PACOTE) < listPacotes.size()) {
 								segmento = listPacotes.get(nextSeqNum / TAMANHO_PACOTE);
 							} else { // se não for retransmissão
-								segmento = serializeObject(pacote);
+								segmento = serializeObject(p);
 								listPacotes.add(segmento);
 							}
 
 							nextSeqNum += TAMANHO_PACOTE;
+							numSeqPacotes += TAMANHO_PACOTE;
 							socketSaida.send(new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
 						} else {
 							listPacotes.add(segmento);

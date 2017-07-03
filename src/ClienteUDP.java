@@ -12,25 +12,27 @@ public class ClienteUDP extends Thread {
 
 	private String ipDestino;
 	private int portDestino;
-	private Chat chat;
+	
 	private DatagramSocket clientSocket;
 
 	public ClienteUDP(String ipDestino, int portDestino) {
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
-	}
-
-	public void run() {
 		try {
-			clientSocket = new DatagramSocket(portDestino);
-			GDPClient gdp = new GDPClient(ipDestino, portDestino);
+			clientSocket = new DatagramSocket(2010); //porta do meu cliente
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
 	}
 
+	public void run() {
+		startConection();
+		Chat chat = new Chat(ipDestino, portDestino);
+		chat.NewScreen(chat);
+	}
+
 	public void startConection() {
-		Pacote p = new Pacote(0, 0, 7, -1, false, false, true, false, 0, 0, "Teste".getBytes());
+		Pacote p = new Pacote(2010, portDestino, 7, -1, false, false, true, false, 0, 0, "Teste".getBytes());
 
 		try {
 

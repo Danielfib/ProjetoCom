@@ -17,8 +17,8 @@ public class Chat extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField Escrito;
-	String ipDestino;
-	int portDestino;
+	private String ipDestino;
+	private int portDestino;
 
 	JTextArea textArea = new JTextArea();
 
@@ -29,6 +29,7 @@ public class Chat extends JFrame {
 	String mensagem1, Outras;
 	Calendar cal = Calendar.getInstance();
 	SimpleDateFormat sdf = new SimpleDateFormat("dd:MM:yyyy 'uma' EE 'as' hh:mm:ss ' Voce diz: ' ");
+	GDPClient gdp;
 
 	/**
 	 * Launch the application.
@@ -37,11 +38,8 @@ public class Chat extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ClienteUDP client = new ClienteUDP(ipDestino, portDestino);
-					client.startConection();
-					client.start();
-					
 					frame.setVisible(true);
+					gdp = new GDPClient(ipDestino, portDestino);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -52,7 +50,7 @@ public class Chat extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Chat() {
+	public Chat(String ipDestino, int portDestino) {
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 697, 489);
 		contentPane = new JPanel();
@@ -68,6 +66,9 @@ public class Chat extends JFrame {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(6, 56, 655, 323);
 		contentPane.add(scrollPane);
+		
+		this.ipDestino = ipDestino;
+		this.portDestino = portDestino;
 
 		// JTextArea textArea = new JTextArea();
 		scrollPane.setViewportView(textArea);
@@ -77,6 +78,8 @@ public class Chat extends JFrame {
 			int contador = 0;
 
 			public void actionPerformed(ActionEvent arg0) {
+				
+				gdp.pacote = Escrito.getText();
 
 				if (contador == 0) {
 					contador++;

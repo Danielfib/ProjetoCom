@@ -76,14 +76,7 @@ public class Interface {
 				if (ipServidor.getText().equals("") || ipDestinatario.getText().equals("")) {
 					JOptionPane.showMessageDialog(null, "Você não completou algum campo");
 				} else {
-					/*
-					 * Chat novo = new Chat(ipDestinatario.getText(), 2021,
-					 * ipServidor.getText()); novo.NewScreen();
-					 */
-					Chat chat = new Chat();
-					chat.ipDestino = ipDestinatario.getText();
-					chat.portDestino = 2021;
-					chat.NewScreen(chat);
+					new ClienteUDP(ipDestinatario.getText(), 2020).start();
 				}
 
 			}

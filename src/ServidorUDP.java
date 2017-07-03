@@ -32,7 +32,7 @@ public class ServidorUDP implements Runnable {
 		int ultimoNumSeq = -1;
 
 		try {
-			int porta = 2020;
+			int porta = 2027;
 
 			DatagramSocket serverSocket = new DatagramSocket(porta);
 
@@ -49,14 +49,14 @@ public class ServidorUDP implements Runnable {
 				String ipRemetente = serverSocket.getLocalAddress().getHostAddress();
 
 				int portaDestino = pacote.getPort();
-
+				
 				Pacote p = deserializeObject(pacote.getData());
 				PQPacotes.add(p);//adiciona no buffer
 
 				int serverIsn = -2;
 
 				if (p.syn) {
-					Pacote synAck = new Pacote(0, 0, serverIsn, p.numSeq + 1, false, false, true, false, 0, 0,
+					Pacote synAck = new Pacote(porta, portaDestino, serverIsn, p.numSeq + 1, false, false, true, false, 0, 0,
 							"Teste 2".getBytes());
 
 					byte msgTcp[] = serializeObject(synAck);
@@ -71,13 +71,12 @@ public class ServidorUDP implements Runnable {
 						// recebeu a 3 via
 						System.out.println(new String(p.dados));
 						
-						new ClienteUDP(ipDestino, portaDestino).start();
+						//new ClienteUDP(ipDestino, portaDestino).start();
 
 						// aqui eh pra abrir a janela caso alguem dê "conversar"
 						// comigo:
-						Chat chat = new Chat();
-						chat.ipDestino = ipDestino;
-						chat.portDestino = portaDestino;
+						Chat chat = new Chat(ipDestino, p.portOrigem);
+						chat.NewScreen(chat);
 						
 						listaJanelas.add(chat);
 						listaIps.add(ipRemetente); // é de p msm? ou de synack?

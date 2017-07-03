@@ -30,7 +30,7 @@ public class Anexo extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void NewScreen() {
+	public void NewScreen() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
