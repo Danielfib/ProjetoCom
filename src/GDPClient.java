@@ -22,7 +22,7 @@ public class GDPClient {
 	static int tamanhoJanela = 2;
 	static final int TAMANHO_PACOTE = 100;
 
-	String pacote;
+	String pacote = "Hehehe";
 	ArrayList<byte[]> listPacotes;
 
 	DatagramSocket entradaSocket;
@@ -39,7 +39,7 @@ public class GDPClient {
 		listPacotes = new ArrayList<>(tamanhoJanela);
 
 		try {
-			entradaSocket = new DatagramSocket(2045);
+			entradaSocket = new DatagramSocket(2023);
 			saidaSocket = new DatagramSocket();
 
 			ThreadEntrada threadIn = new ThreadEntrada(entradaSocket);

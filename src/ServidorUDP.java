@@ -32,9 +32,10 @@ public class ServidorUDP implements Runnable {
 		int ultimoNumSeq = -1;
 
 		try {
-			int porta = 2027;
+			int porta = 2022;
 
 			DatagramSocket serverSocket = new DatagramSocket(porta);
+			DatagramSocket sendSocket = new DatagramSocket();
 
 			byte[] dados = new byte[TAM_PKT];
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
@@ -60,7 +61,7 @@ public class ServidorUDP implements Runnable {
 							0, 0, "Teste 2".getBytes());
 
 					byte msgTcp[] = serializeObject(synAck);
-					DatagramPacket pkt = new DatagramPacket(msgTcp, msgTcp.length, ipDestinoInet, portaDestino);
+					DatagramPacket pkt = new DatagramPacket(msgTcp, msgTcp.length, ipDestinoInet, 2020);
 
 					System.out.println(ipDestinoInet.getHostAddress() + " " + portaDestino + " " + new String(p.dados));
 
@@ -117,14 +118,14 @@ public class ServidorUDP implements Runnable {
 							// } else {
 							proxNumSeq = numSeq + (TAM_PKT - CABECALHO);
 							byte[] ack = criarPacote(proxNumSeq);
-							serverSocket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, portaDestino));
+							sendSocket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, portaDestino));
 							System.out.println("ack enviado: " + new String(ack)); // debug
 
 							ultimoNumSeq = numSeq;
 						} else {// se pacote estiver fora de ordem, manda o
 								// duplicado
 							byte[] ackDuprikred = criarPacote(ultimoNumSeq);
-							serverSocket.send(
+							sendSocket.send(
 									new DatagramPacket(ackDuprikred, ackDuprikred.length, ipDestinoInet, portaDestino));
 							System.out.println("ack duplicado enviado: " + ultimoNumSeq);
 

@@ -79,7 +79,7 @@ public class Chat extends JFrame {
 
 			public void actionPerformed(ActionEvent arg0) {
 				
-				gdp.pacote = Escrito.getText();
+				//gdp.pacote = Escrito.getText();
 
 				if (contador == 0) {
 					contador++;

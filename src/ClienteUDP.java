@@ -7,19 +7,24 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.ArrayList;
 
 public class ClienteUDP extends Thread {
 
 	private String ipDestino;
 	private int portDestino;
+	private ArrayList<Chat> listaJanelas = new ArrayList<>();
+	private ArrayList<String> listaIps = new ArrayList<>();
 	
 	private DatagramSocket clientSocket;
 
-	public ClienteUDP(String ipDestino, int portDestino) {
+	public ClienteUDP(String ipDestino, int portDestino, ArrayList<Chat> listaJanelas, ArrayList<String> listaIps) {
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
+		this.listaJanelas = listaJanelas;
+		this.listaIps = listaIps;
 		try {
-			clientSocket = new DatagramSocket(2011); //porta do meu cliente
+			clientSocket = new DatagramSocket(2020); //porta do meu cliente
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
@@ -28,11 +33,15 @@ public class ClienteUDP extends Thread {
 	public void run() {
 		startConection();
 		Chat chat = new Chat(ipDestino, portDestino);
+		
+		listaJanelas.add(chat);
+		listaIps.add(ipDestino);
+		
 		chat.NewScreen(chat);
 	}
 
 	public void startConection() {
-		Pacote p = new Pacote(2021, portDestino, 7, -1, false, false, true, false, 0, 0, "Teste".getBytes());
+		Pacote p = new Pacote(2020, portDestino, 7, -1, false, false, true, false, 0, 0, "Teste".getBytes());
 
 		try {
 

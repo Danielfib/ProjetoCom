@@ -76,7 +76,7 @@ public class Interface {
 				if (ipServidor.getText().equals("") || ipDestinatario.getText().equals("")) {
 					JOptionPane.showMessageDialog(null, "Você não completou algum campo");
 				} else {
-					new ClienteUDP(ipDestinatario.getText(), 2020).start();
+					new ClienteUDP(ipDestinatario.getText(), 2022, listaJanelas, listaIps).start();
 				}
 
 			}
