@@ -77,9 +77,12 @@ public class ServidorUDP implements Runnable {
 						// comigo:
 						Chat chat = new Chat();
 						chat.ipDestino = ipDestino;
+						chat.portDestino = portaDestino;
+						
 						listaJanelas.add(chat);
 						listaIps.add(ipRemetente); // é de p msm? ou de synack?
-						chat.NewScreen();
+						
+						chat.NewScreen(chat);
 						
 					} else {
 						// Dados da aplicação

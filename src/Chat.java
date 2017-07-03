@@ -18,6 +18,7 @@ public class Chat extends JFrame {
 	private JPanel contentPane;
 	private JTextField Escrito;
 	String ipDestino;
+	int portDestino;
 
 	JTextArea textArea = new JTextArea();
 
@@ -32,11 +33,14 @@ public class Chat extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public void NewScreen() {
+	public void NewScreen(Chat frame) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Chat frame = new Chat();
+					ClienteUDP client = new ClienteUDP(ipDestino, portDestino);
+					client.startConection();
+					client.start();
+					
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

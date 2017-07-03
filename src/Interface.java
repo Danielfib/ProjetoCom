@@ -80,9 +80,10 @@ public class Interface {
 					 * Chat novo = new Chat(ipDestinatario.getText(), 2021,
 					 * ipServidor.getText()); novo.NewScreen();
 					 */
-					ClienteUDP client = new ClienteUDP(ipDestinatario.getText(), 2021);
-					client.startConection();
-					client.start();
+					Chat chat = new Chat();
+					chat.ipDestino = ipDestinatario.getText();
+					chat.portDestino = 2021;
+					chat.NewScreen(chat);
 				}
 
 			}

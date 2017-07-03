@@ -58,11 +58,6 @@ public class ClienteUDP extends Thread {
 			pkt.setLength(msgTcp.length);
 			clientSocket.send(pkt);
 
-			// Cria Chat
-			chat = new Chat();
-			chat.ipDestino = ipDestino;
-			chat.NewScreen();
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
