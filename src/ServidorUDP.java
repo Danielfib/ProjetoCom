@@ -76,7 +76,7 @@ public class ServidorUDP implements Runnable {
 
 						// aqui eh pra abrir a janela caso alguem dê "conversar"
 						// comigo:
-						Chat chat = new Chat(ipDestino, p.portOrigem);
+						Chat chat = new Chat(ipDestino, 2022);
 						chat.NewScreen(chat);
 
 						listaJanelas.add(chat);
@@ -88,7 +88,6 @@ public class ServidorUDP implements Runnable {
 						// Dados da aplicação
 						// recebendo a mensagem, direcionando para o chat certo:
 						for (int c = 0; c < listaIps.size(); c++) {
-							System.out.println(c);
 							if (ipDestino.equals(listaIps.get(c))) { // se der
 																		// bug,
 																		// colocar
