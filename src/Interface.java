@@ -77,7 +77,7 @@ public class Interface {
 					JOptionPane.showMessageDialog(null, "Você não completou algum campo");
 				} else {
 					/*
-					 * Chat novo = new Chat(ipDestinatario.getText(), 2021 ,
+					 * Chat novo = new Chat(ipDestinatario.getText(), 2021,
 					 * ipServidor.getText()); novo.NewScreen();
 					 */
 					ClienteUDP client = new ClienteUDP(ipDestinatario.getText(), 2021);
