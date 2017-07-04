@@ -3,9 +3,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.awt.event.ActionEvent;
@@ -66,7 +69,7 @@ public class Chat extends JFrame {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(6, 56, 655, 323);
 		contentPane.add(scrollPane);
-		
+
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
 
@@ -78,7 +81,7 @@ public class Chat extends JFrame {
 			int contador = 0;
 
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				gdp.pacote = Escrito.getText();
 
 				if (contador == 0) {
@@ -100,8 +103,11 @@ public class Chat extends JFrame {
 		JButton btnAnexo = new JButton("ANEXO");
 		btnAnexo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Anexo anexo = new Anexo();
-				anexo.NewScreen();
+				JFileChooser buscar = new JFileChooser();
+				buscar.showOpenDialog(btnAnexo);
+				File arquivo = buscar.getSelectedFile();
+				Escrito.setText(arquivo.getAbsolutePath());
+				//gdp.pacote
 			}
 		});
 		btnAnexo.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -114,7 +120,6 @@ public class Chat extends JFrame {
 		contentPane.add(lblNewLabel);
 
 	}
-	
 
 	public void addText(String msg) {
 		msgTela = msgTela + '\n' + sdf.format(cal.getTime()) + " " + msg;

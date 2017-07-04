@@ -26,15 +26,17 @@ public class Anexo extends JFrame {
 	private JLabel label_2;
 	private JLabel label_3;
 	private JLabel label_1;
+	
+	private String ipDestino;
+	private int portDestino;
 
 	/**
 	 * Launch the application.
 	 */
-	public void NewScreen() {
+	public void NewScreen(Anexo frame) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Anexo frame = new Anexo();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -46,8 +48,8 @@ public class Anexo extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Anexo() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public Anexo(String ipDestino, int portDestino) {
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 452, 356);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -57,6 +59,9 @@ public class Anexo extends JFrame {
 		JLabel lblEscolhaOEndereo = new JLabel("Escolha o endereço para anexar");
 		lblEscolhaOEndereo.setBounds(16, 17, 222, 21);
 		contentPane.add(lblEscolhaOEndereo);
+		
+		this.ipDestino = ipDestino;
+		this.portDestino = portDestino;
 		
 		JButton btnEscolher = new JButton("Escolher...");
 		btnEscolher.addActionListener(new ActionListener() {
