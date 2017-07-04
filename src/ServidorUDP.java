@@ -111,7 +111,7 @@ public class ServidorUDP implements Runnable {
 							sendSocket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, portaDestino));
 							System.out.println("ack enviado: " + proxNumSeq); // debug
 
-							ultimoNumSeq = numSeq;
+							ultimoNumSeq = proxNumSeq;
 						} else {// se pacote estiver fora de ordem, manda o
 								// duplicado
 							byte[] ackDuprikred = criarPacote(ultimoNumSeq);
