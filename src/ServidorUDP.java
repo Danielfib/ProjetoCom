@@ -19,8 +19,8 @@ public class ServidorUDP implements Runnable {
 	Comparator comparador = new NumSeqComparator();
 	private PriorityQueue<Pacote> PQPacotes = new PriorityQueue<Pacote>(comparador);
 
-	static final int TAM_PKT = 500;
 	static final int CABECALHO = 28;// se mudar, só mudar aqui
+	static final int TAM_PKT = 1000 + CABECALHO;
 
 	public ServidorUDP(ArrayList<Chat> listaJanelas, ArrayList<String> listaIps) {
 		this.listaJanelas = listaJanelas;
@@ -47,7 +47,7 @@ public class ServidorUDP implements Runnable {
 
 				InetAddress ipDestinoInet = pacote.getAddress();
 				String ipDestino = ipDestinoInet.getHostAddress();
-				String ipRemetente = serverSocket.getLocalAddress().getHostAddress();
+				//String ipRemetente = serverSocket.getLocalAddress().getHostAddress();
 
 				int portaDestino = pacote.getPort();
 
@@ -63,16 +63,11 @@ public class ServidorUDP implements Runnable {
 					byte msgTcp[] = serializeObject(synAck);
 					DatagramPacket pkt = new DatagramPacket(msgTcp, msgTcp.length, ipDestinoInet, 2020);
 
-					System.out.println(ipDestinoInet.getHostAddress() + " " + portaDestino + " " + new String(p.dados));
-
 					serverSocket.send(pkt);
 					PQPacotes.remove();
 				} else {
 					if (p.numConfirmacao == (serverIsn + 1)) {
 						// recebeu a 3 via
-						System.out.println(new String(p.dados));
-
-						// new ClienteUDP(ipDestino, portaDestino).start();
 
 						// aqui eh pra abrir a janela caso alguem dê "conversar"
 						// comigo:
@@ -80,23 +75,19 @@ public class ServidorUDP implements Runnable {
 						chat.NewScreen(chat);
 
 						listaJanelas.add(chat);
-						listaIps.add(ipRemetente); // é de p msm? ou de synack?
+						listaIps.add(ipDestino); // é de p msm? ou de synack?
 
 						chat.NewScreen(chat);
 
 					} else {
 						// Dados da aplicação
 						// recebendo a mensagem, direcionando para o chat certo:
+						System.out.println(new String(p.dados));
 						for (int c = 0; c < listaIps.size(); c++) {
-							if (ipDestino.equals(listaIps.get(c))) { // se der
-																		// bug,
-																		// colocar
-																		// ip do
-																		// pacote
+							if (ipDestino.equals(listaIps.get(c))) {
 								listaJanelas.get(c).addText(new String(PQPacotes.peek().dados));
 								// listaJanelas.get(c).addText(new
 								// String(p.dados));
-								System.out.println(new String(p.dados));
 							}
 						}
 						// int numSeq =
@@ -118,7 +109,7 @@ public class ServidorUDP implements Runnable {
 							proxNumSeq = numSeq + (TAM_PKT - CABECALHO);
 							byte[] ack = criarPacote(proxNumSeq);
 							sendSocket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, portaDestino));
-							System.out.println("ack enviado: " + new String(ack)); // debug
+							System.out.println("ack enviado: " + proxNumSeq); // debug
 
 							ultimoNumSeq = numSeq;
 						} else {// se pacote estiver fora de ordem, manda o

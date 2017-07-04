@@ -15,14 +15,15 @@ public class GDPClient {
 
 	int sendBase;
 	int nextSeqNum;
+	static int a = 2030;
 
 	String ipDestino;
 	int portDestino;
 
-	static int tamanhoJanela = 2;
-	static final int TAMANHO_PACOTE = 100;
+	static int tamanhoJanela = 4;
+	static final int TAMANHO_PACOTE = 1000;
 
-	String pacote = "Hehehe";
+	String pacote = "Olá";
 	ArrayList<byte[]> listPacotes;
 
 	DatagramSocket entradaSocket;
@@ -39,7 +40,8 @@ public class GDPClient {
 		listPacotes = new ArrayList<>(tamanhoJanela);
 
 		try {
-			entradaSocket = new DatagramSocket(2023);
+			entradaSocket = new DatagramSocket(a);
+			a++;
 			saidaSocket = new DatagramSocket();
 
 			ThreadEntrada threadIn = new ThreadEntrada(entradaSocket);
@@ -99,6 +101,7 @@ public class GDPClient {
 				int numSeqPacotes = 0;
 				while (true) {
 					byte[] segmento = null;
+					pacote = "" + numSeqPacotes; //teste
 					Pacote p = new Pacote(socketSaida.getLocalPort(), portDestino, numSeqPacotes,
 							numSeqPacotes + TAMANHO_PACOTE, false, false, false, false, 0, 0, pacote.getBytes());
 					if (p.numSeq >= sendBase) {
@@ -112,13 +115,13 @@ public class GDPClient {
 								segmento = serializeObject(p);
 								listPacotes.add(segmento);
 							}
-
+							
 							nextSeqNum += TAMANHO_PACOTE;
-							numSeqPacotes += TAMANHO_PACOTE;
 							socketSaida.send(new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
 						} else {
 							listPacotes.add(segmento);
 						}
+						numSeqPacotes += TAMANHO_PACOTE; //teste
 					}
 					sleep(7);
 				}

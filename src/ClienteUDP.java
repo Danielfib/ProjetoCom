@@ -56,7 +56,6 @@ public class ClienteUDP extends Thread {
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
 			clientSocket.receive(pacote);
 			Pacote receiveP = deserializeObject(pacote.getData());
-			System.out.println(new String(receiveP.dados));
 
 			// enviando 3 via
 			p.dados = "Teste 3".getBytes();
