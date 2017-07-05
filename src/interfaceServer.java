@@ -1,6 +1,15 @@
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -46,8 +55,9 @@ public class interfaceServer extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws IOException 
 	 */
-	public interfaceServer() {
+	public interfaceServer() throws IOException {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 602, 454);
 		contentPane = new JPanel();
@@ -68,14 +78,27 @@ public class interfaceServer extends JFrame {
 		});
 		btnCadastrarUsurio.setBounds(347, 17, 130, 23);
 		contentPane.add(btnCadastrarUsurio);
+		
+		BufferedReader in = new BufferedReader(new FileReader("teste.txt"));
+		String str= "";
+		str = in.readLine();
+		
+		String[] novo = str.split(", ");
+		System.out.println(novo[11]);
+		for ( int i=0 ; i<novo.length ; i+=4){
+			if( novo[i+1] != null ){
+				ArrayList<String> dados = new ArrayList();
+				interfaceServer.addLinhas(dados, novo[i], novo[i+1], novo[i+2], novo[i+3]);
+				interfaceServer.listaCadastros.add(dados);
+				System.out.println(dados.toString());
+			} 
+		}
+		in.close();
 
-		// aqui vai ficar a inserção dos usuários na tabela
+		// aqui vai ficar a inserï¿½ï¿½o dos usuï¿½rios na tabela
 
 		addLinhas(titulos, "Status", "Nome", "Ip", "Porta");
-		addLinhas(teste, "online", "Mateus", "10.10.10", "2020");
-		listaCadastros.add(teste);
-		System.out.println(titulos.toString());
-
+		
 		Object[] tempTitulos = titulos.toArray();
 		String[][] tempTabela = new String[listaCadastros.size()][];
 		int i = 0;
@@ -84,17 +107,23 @@ public class interfaceServer extends JFrame {
 		}
 
 		criarTabela(tempTabela, tempTitulos);
+		System.out.println(listaCadastros.toString());
 		Timer t = new Timer(500, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				update(tempTabela, tempTitulos);
+				try {
+					update(tempTabela, tempTitulos);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				
 			}
 		});
 		t.start();
 
 	}
-
+	
 	public static void addLinhas(ArrayList<String> titulos, String linha1, String linha2, String linha3,
 			String linha4) {
 
@@ -104,7 +133,7 @@ public class interfaceServer extends JFrame {
 		titulos.add(linha4);
 	}
 
-	public static void criarTabela(Object[][] objeto1, Object[] objeto2) {
+	public static void criarTabela(Object[][] objeto1, Object[] objeto2) throws IOException {
 		table = new JTable(objeto1, objeto2);
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(10, 65, 548, 265);
@@ -112,9 +141,17 @@ public class interfaceServer extends JFrame {
 		scrollPane_1.setViewportView(table);
 		table.setForeground(Color.DARK_GRAY);
 		table.setBackground(Color.WHITE);
+        BufferedWriter escritor = null;
+		escritor = new BufferedWriter(new FileWriter("teste.txt"));
+		String resultados = listaCadastros.toString();
+		String dois;
+		dois = resultados.replace("[", "").replace("]", "");
+		System.out.println(dois);
+		escritor.write(dois);
+		escritor.close();
 	}
 
-	public static void update(Object[][] objeto1, Object[] objeto2) {
+	public static void update(Object[][] objeto1, Object[] objeto2) throws IOException {
 		Object[] tempTitulos = titulos.toArray();
 		String[][] tempTabela = new String[listaCadastros.size()][];
 		int i = 0;
@@ -122,6 +159,9 @@ public class interfaceServer extends JFrame {
 			tempTabela[i++] = next.toArray(new String[next.size()]);
 		}
 		criarTabela(tempTabela, tempTitulos);
+		
+		
+		
 
 	}
 
