@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.JProgressBar;
 
 public class Chat extends JFrame {
 
@@ -23,6 +24,8 @@ public class Chat extends JFrame {
 	private String ipDestino;
 	private int portDestino;
 	private int numSeq;
+	private static JProgressBar progressBar = new JProgressBar();
+	private static JLabel rtt = new JLabel("RTT (ms): ");
 
 	JTextArea textArea = new JTextArea();
 
@@ -42,6 +45,9 @@ public class Chat extends JFrame {
 				try {
 					frame.setVisible(true);
 					gdp = new GDPClient(ipDestino, portDestino);
+					RttSend Sender = new RttSend(ipDestino);
+					RttReceive Receiver = new RttReceive("localhost");
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -97,7 +103,7 @@ public class Chat extends JFrame {
 		});
 
 		BtnEnviar.setFont(new Font("Tahoma", Font.BOLD, 17));
-		BtnEnviar.setBounds(500, 401, 161, 34);
+		BtnEnviar.setBounds(500, 410, 161, 25);
 		contentPane.add(BtnEnviar);
 
 		JButton btnAnexo = new JButton("ANEXO");
@@ -117,9 +123,23 @@ public class Chat extends JFrame {
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblNewLabel.setBounds(10, 19, 355, 25);
 		contentPane.add(lblNewLabel);
+		
+		progressBar.setBounds(500, 390, 161, 14);
+		contentPane.add(progressBar);
+		
+		rtt.setBounds(380, 26, 119, 14);
+		contentPane.add(rtt);
 
 	}
 
+	public static void setRTT(long rttN){
+		rtt.setText("RTT (ms): " + rttN);
+	}
+	
+	public static void setProgress(int n){
+		progressBar.setValue(n);
+	}
+	
 	public void addText(String msg) {
 		msgTela += sdf.format(cal.getTime()) + " " + ipDestino + " disse: " + msg;
 		textArea.setText(msgTela);

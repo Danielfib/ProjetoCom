@@ -15,6 +15,7 @@ public class GDPServer implements Runnable {
 
 	DatagramSocket socket;
 	Chat chat;
+	boolean receiveConfirm = false;
 
 	/*private Comparator comparador = new NumSeqComparator();
 	private PriorityQueue<Pacote> PQPacotes = new PriorityQueue<Pacote>(comparador);*/
@@ -40,7 +41,7 @@ public class GDPServer implements Runnable {
 
 			try {
 				socket.receive(pkt);
-
+				receiveConfirm = true;
 				InetAddress ipDestinoInet = pkt.getAddress();
 
 				Pacote p = deserializeObject(pkt.getData());
