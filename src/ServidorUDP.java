@@ -40,14 +40,11 @@ public class ServidorUDP implements Runnable {
 			byte[] dados = new byte[TAM_PKT];
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
 
-			// TRATAR PARA SE FOR UM ARQUIVO E N UMA MSG
-
 			while (true) {
 				serverSocket.receive(pacote);
 
 				InetAddress ipDestinoInet = pacote.getAddress();
 				String ipDestino = ipDestinoInet.getHostAddress();
-				//String ipRemetente = serverSocket.getLocalAddress().getHostAddress();
 
 				int portaDestino = pacote.getPort();
 
@@ -60,69 +57,43 @@ public class ServidorUDP implements Runnable {
 							false, 0, 0, "Teste 2".getBytes());
 
 					byte msgTcp[] = serializeObject(synAck);
-					DatagramPacket pkt = new DatagramPacket(msgTcp, msgTcp.length, ipDestinoInet, 2020);
-					
+					DatagramPacket pkt = new DatagramPacket(msgTcp, msgTcp.length, ipDestinoInet, portaDestino);
+
 					System.out.println(new String(p.dados));
 
 					serverSocket.send(pkt);
 				} else {
 					if (p.numConfirmacao == (serverIsn + 1)) {
 						// recebeu a 3 via
-						
+
 						System.out.println(new String(p.dados));
 
-						// aqui eh pra abrir a janela caso alguem dê "conversar"
-						// comigo:
-						Chat chat = new Chat(ipDestino, 2022);
-						chat.NewScreen(chat);
+						Chat chat = new Chat(ipDestino, 2032);
 
 						listaJanelas.add(chat);
-						listaIps.add(ipDestino); // é de p msm? ou de synack?
-
+						listaIps.add(ipDestino);
 						chat.NewScreen(chat);
 
 					} else {
 						// Dados da aplicação
-						// recebendo a mensagem, direcionando para o chat certo:
-						
+
 						PQPacotes.add(p);// adiciona no buffer
-						
-						/*System.out.println(new String(p.dados));
-						
-						for (int c = 0; c < listaIps.size(); c++) {
-							if (ipDestino.equals(listaIps.get(c))) {
-								listaJanelas.get(c).addText(new String(PQPacotes.peek().dados));
-								// listaJanelas.get(c).addText(new
-								// String(p.dados));
-							}
-						}*/
-						// int numSeq =
-						// ByteBuffer.wrap(Arrays.copyOfRange(dados, 0,
-						// CABECALHO)).getInt();
+
 						int numSeq = p.numSeq;
+						listaJanelas.get(0).addText(new String(p.dados));
 
 						// se o pacote recebido estiver em ordem:
 						if (numSeq == proxNumSeq) {
-							// //enviar ack FIM caso seja o ultimo pacote (sem
-							// dados)
-							// if (pacote.getLength() == CABECALHO){
-							// byte[] ackFim = criarPacote(-2); //administrar o
-							// uso disso pra reconhecimento de ACK final
-							// sendSocket.send(new DatagramPacket(ackFim,
-							// ackFim.length, ipDestinoInet, porta));
-							// //boolean de transf = true
-							// } else {
+
 							proxNumSeq = numSeq + (TAM_PKT - CABECALHO);
 							byte[] ack = criarPacote(proxNumSeq);
-							sendSocket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, portaDestino));
+							sendSocket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, 2030));
 							System.out.println("ack enviado: " + proxNumSeq); // debug
 
 							ultimoNumSeq = proxNumSeq;
-						} else {// se pacote estiver fora de ordem, manda o
-								// duplicado
+						} else {
 							byte[] ackDuprikred = criarPacote(ultimoNumSeq);
-							sendSocket.send(
-									new DatagramPacket(ackDuprikred, ackDuprikred.length, ipDestinoInet, portaDestino));
+							sendSocket.send(new DatagramPacket(ackDuprikred, ackDuprikred.length, ipDestinoInet, 2030));
 							System.out.println("ack duplicado enviado: " + ultimoNumSeq);
 
 						}
@@ -150,12 +121,10 @@ public class ServidorUDP implements Runnable {
 	}
 
 	public byte[] criarPacote(int numAck) {
-		// cria um array de bytes do numero do ack
 		byte[] bytesAckNumber = ByteBuffer.allocate(4).putInt(numAck).array();
 		ByteBuffer buffer = ByteBuffer.allocate(4);
 		buffer.put(bytesAckNumber);
 		return buffer.array();
-		// cria um pacote em formato array de bytes com o inteiro passado
 
 	}
 

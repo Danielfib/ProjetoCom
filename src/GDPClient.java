@@ -30,8 +30,6 @@ public class GDPClient {
 	DatagramSocket entradaSocket;
 	DatagramSocket saidaSocket;
 	
-	static int a = 2030;
-
 	public GDPClient(String ipDestino, int portDestino) throws SocketException {
 
 		this.sendBase = 0;
@@ -44,8 +42,7 @@ public class GDPClient {
 		listPacotes = new ArrayList<>(tamanhoJanela);
 
 		try {
-			entradaSocket = new DatagramSocket(a);
-			a++;
+			entradaSocket = new DatagramSocket(2045);
 			saidaSocket = new DatagramSocket();
 
 			ThreadEntrada threadIn = new ThreadEntrada(entradaSocket);
@@ -102,11 +99,11 @@ public class GDPClient {
 		@Override
 		public void run() {
 			try {
-				int ultimoNumSeq = -1;
+				int ultimoNumSeq = 0;
 				while (true) {
 					byte[] segmento = null;
-					//pacote.portOrigem = 2030;
 					if(ultimoNumSeq != pacote.numSeq) {
+						pacote.numSeq = nextSeqNum;
 						if (pacote.numSeq >= sendBase) {
 							if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
 								if (nextSeqNum == sendBase) {
@@ -161,11 +158,12 @@ public class GDPClient {
 				try {
 					socketEntrada.receive(packet);
 					int numAck = getnumAck(ack);
+					System.out.println(numAck);
 					// ACK duplicado
-					if (sendBase == numAck + TAMANHO_PACOTE) {
+					if (sendBase == numAck) {
 						nextSeqNum = sendBase;
 					} else { // ACK normal
-						sendBase = numAck + TAMANHO_PACOTE;
+						sendBase = numAck;
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

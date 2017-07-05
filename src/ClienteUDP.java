@@ -24,7 +24,7 @@ public class ClienteUDP extends Thread {
 		this.listaJanelas = listaJanelas;
 		this.listaIps = listaIps;
 		try {
-			clientSocket = new DatagramSocket(2020); //porta do meu cliente
+			clientSocket = new DatagramSocket(2020);
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}

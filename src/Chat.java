@@ -28,8 +28,6 @@ public class Chat extends JFrame {
 
 	private String msgTela = "";
 
-	// criando variaveis importantes para a aplicação
-
 	String mensagem1, Outras;
 	Calendar cal = Calendar.getInstance();
 	SimpleDateFormat sdf = new SimpleDateFormat("dd:MM:yyyy 'uma' EE 'as' hh:mm:ss ' Voce diz: ' ");
