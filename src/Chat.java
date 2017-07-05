@@ -82,9 +82,10 @@ public class Chat extends JFrame {
 
 			public void actionPerformed(ActionEvent arg0) {
 
-				gdp.pacote = new Pacote(0, portDestino, numSeq, 0, false, false, false, false, false, 0, 0,
+				Pacote p = new Pacote(0, portDestino, numSeq, 0, false, false, false, false, false, 0, 0,
 						Escrito.getText().getBytes());
 				numSeq += 1000;
+				gdp.listPacotes.add(p);
 
 				msgTela += sdf.format(cal.getTime()) + " " + "Você disse: " + Escrito.getText() + "\n";
 				textArea.setText(msgTela);

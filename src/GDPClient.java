@@ -24,8 +24,7 @@ public class GDPClient {
 	static int tamanhoJanela = 4;
 	static final int TAMANHO_PACOTE = 1000;
 
-	Pacote pacote;
-	ArrayList<byte[]> listPacotes;
+	ArrayList<Pacote> listPacotes;
 
 	DatagramSocket entradaSocket;
 	DatagramSocket saidaSocket;
@@ -34,7 +33,6 @@ public class GDPClient {
 
 		this.sendBase = 0;
 		this.nextSeqNum = 0;
-		this.pacote = new Pacote(-1, -1, -1, 0, false, false, false, false, false, 0, 0, "".getBytes());
 
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
@@ -100,29 +98,28 @@ public class GDPClient {
 		public void run() {
 			try {
 				int ultimoNumSeq = -1;
+				Pacote pacote;
 				while (true) {
 					byte[] segmento = null;
-					if(ultimoNumSeq != pacote.numSeq) {
-						pacote.numSeq = nextSeqNum;
-						pacote.portOrigem = socketSaida.getLocalPort();
-						if (pacote.numSeq >= sendBase) {
-							if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
-								if (nextSeqNum == sendBase) {
-									// inicia timer
+					if((pacote = listPacotes.get(nextSeqNum / TAMANHO_PACOTE)) != null) {
+						if(ultimoNumSeq != pacote.numSeq) {
+							pacote.portOrigem = socketSaida.getLocalPort();
+							if (pacote.numSeq >= sendBase) {
+								if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
+									if (nextSeqNum == sendBase) {
+										// inicia timer
+									}
+									if ((nextSeqNum / TAMANHO_PACOTE) < listPacotes.size()) {
+										segmento = serializeObject(listPacotes.get(nextSeqNum / TAMANHO_PACOTE));
+									} else { // se não for retransmissão
+										segmento = serializeObject(pacote);
+									}
+									
+									nextSeqNum += TAMANHO_PACOTE;
+									socketSaida.send(new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
+									ultimoNumSeq = pacote.numSeq;
 								}
-								if ((nextSeqNum / TAMANHO_PACOTE) < listPacotes.size()) {
-									segmento = listPacotes.get(nextSeqNum / TAMANHO_PACOTE);
-								} else { // se não for retransmissão
-									segmento = serializeObject(pacote);
-									listPacotes.add(segmento);
-								}
-								
-								nextSeqNum += TAMANHO_PACOTE;
-								socketSaida.send(new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
-							} else {
-								listPacotes.add(segmento);
 							}
-							ultimoNumSeq = pacote.numSeq;
 						}
 					}
 					sleep(7);
