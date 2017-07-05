@@ -34,7 +34,7 @@ public class GDPClient {
 
 		this.sendBase = 0;
 		this.nextSeqNum = 0;
-		this.pacote = new Pacote(-1, -1, -1, 0, false, false, false, false, false, 0, 0, null);
+		this.pacote = new Pacote(-1, -1, -1, 0, false, false, false, false, false, 0, 0, "".getBytes());
 
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
@@ -99,7 +99,7 @@ public class GDPClient {
 		@Override
 		public void run() {
 			try {
-				int ultimoNumSeq = 0;
+				int ultimoNumSeq = -1;
 				while (true) {
 					byte[] segmento = null;
 					if(ultimoNumSeq != pacote.numSeq) {
@@ -122,8 +122,8 @@ public class GDPClient {
 								listPacotes.add(segmento);
 							}
 						}
+						ultimoNumSeq = pacote.numSeq;
 					}
-					ultimoNumSeq = pacote.numSeq;
 					sleep(7);
 				}
 			} catch (IOException | InterruptedException e) {

@@ -80,11 +80,11 @@ public class ServidorUDP implements Runnable {
 						PQPacotes.add(p);// adiciona no buffer
 
 						int numSeq = p.numSeq;
-						listaJanelas.get(0).addText(new String(p.dados));
 
 						// se o pacote recebido estiver em ordem:
 						if (numSeq == proxNumSeq) {
 
+							listaJanelas.get(0).addText(new String(p.dados) + "\n");
 							proxNumSeq = numSeq + (TAM_PKT - CABECALHO);
 							byte[] ack = criarPacote(proxNumSeq);
 							sendSocket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, 2030));

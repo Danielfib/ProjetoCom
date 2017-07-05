@@ -30,7 +30,7 @@ public class Chat extends JFrame {
 
 	String mensagem1, Outras;
 	Calendar cal = Calendar.getInstance();
-	SimpleDateFormat sdf = new SimpleDateFormat("dd:MM:yyyy 'uma' EE 'as' hh:mm:ss ' Voce diz: ' ");
+	SimpleDateFormat sdf = new SimpleDateFormat("dd:MM:yyyy 'uma' EE 'as' hh:mm:ss, ");
 	GDPClient gdp;
 
 	/**
@@ -79,25 +79,19 @@ public class Chat extends JFrame {
 
 		JButton BtnEnviar = new JButton("ENVIAR");
 		BtnEnviar.addActionListener(new ActionListener() {
-			int contador = 0;
 
 			public void actionPerformed(ActionEvent arg0) {
 
-				gdp.pacote = new Pacote(2030, portDestino, numSeq, 0, false, false, false, false, false, 0, 0, Escrito.getText().getBytes());
+				gdp.pacote = new Pacote(2030, portDestino, numSeq, 0, false, false, false, false, false, 0, 0,
+						Escrito.getText().getBytes());
 				numSeq += 1000;
 
-				if (contador == 0) {
-					contador++;
-					mensagem1 = Escrito.getText();
-					msgTela = sdf.format(cal.getTime()) + " " + mensagem1;
-					textArea.setText(msgTela);
-				} else {
-					msgTela = msgTela + '\n' + sdf.format(cal.getTime()) + " " + Escrito.getText();
-					textArea.setText(msgTela);
-				}
-				
+				msgTela += sdf.format(cal.getTime()) + " " + "Você disse: " + Escrito.getText() + "\n";
+				textArea.setText(msgTela);
+
 				Escrito.setText("");
-				
+				Escrito.requestFocus();
+
 			}
 		});
 
@@ -126,7 +120,7 @@ public class Chat extends JFrame {
 	}
 
 	public void addText(String msg) {
-		msgTela = msgTela + '\n' + sdf.format(cal.getTime()) + " " + msg;
+		msgTela += sdf.format(cal.getTime()) + " " + ipDestino + " disse: " + msg;
 		textArea.setText(msgTela);
 	}
 }
