@@ -104,6 +104,7 @@ public class GDPClient {
 					byte[] segmento = null;
 					if(ultimoNumSeq != pacote.numSeq) {
 						pacote.numSeq = nextSeqNum;
+						pacote.portOrigem = socketSaida.getLocalPort();
 						if (pacote.numSeq >= sendBase) {
 							if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
 								if (nextSeqNum == sendBase) {
@@ -121,8 +122,8 @@ public class GDPClient {
 							} else {
 								listPacotes.add(segmento);
 							}
+							ultimoNumSeq = pacote.numSeq;
 						}
-						ultimoNumSeq = pacote.numSeq;
 					}
 					sleep(7);
 				}

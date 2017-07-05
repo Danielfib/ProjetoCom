@@ -11,13 +11,8 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.Color;
 
 public class Interface {
-
-	private static ArrayList<Chat> listaJanelas = new ArrayList<Chat>();
-	private static ArrayList<String> listaIps = new ArrayList<String>();
-	// lista encadeada com as jframes das conversas
 
 	public static JFrame frame;
 	public static JTextField ipDestinatario;
@@ -28,7 +23,7 @@ public class Interface {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		(new Thread(new ServidorUDP(listaJanelas, listaIps))).start();
+		(new Thread(new ServidorUDP())).start();
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -77,7 +72,7 @@ public class Interface {
 				if (ipServidor.getText().equals("") || ipDestinatario.getText().equals("") || textField.getText().equals("")) {
 					JOptionPane.showMessageDialog(null, "Você não completou algum campo");
 				} else {
-					new ClienteUDP(ipDestinatario.getText(), Integer.parseInt(textField.getText()), listaJanelas, listaIps).start();
+					new ClienteUDP(ipDestinatario.getText(), Integer.parseInt(textField.getText())).start();
 				}
 
 			}

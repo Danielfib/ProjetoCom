@@ -13,16 +13,12 @@ public class ClienteUDP extends Thread {
 
 	private String ipDestino;
 	private int portDestino;
-	private ArrayList<Chat> listaJanelas = new ArrayList<>();
-	private ArrayList<String> listaIps = new ArrayList<>();
 	
 	private DatagramSocket clientSocket;
 	
-	public ClienteUDP(String ipDestino, int portDestino, ArrayList<Chat> listaJanelas, ArrayList<String> listaIps) {
+	public ClienteUDP(String ipDestino, int portDestino) {
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
-		this.listaJanelas = listaJanelas;
-		this.listaIps = listaIps;
 		try {
 			clientSocket = new DatagramSocket(2020);
 		} catch (SocketException e) {
@@ -31,17 +27,10 @@ public class ClienteUDP extends Thread {
 	}
 
 	public void run() {
-		if(startConection()) {
-			Chat chat = new Chat(ipDestino, portDestino);
-			
-			listaJanelas.add(chat);
-			listaIps.add(ipDestino);
-			
-			chat.NewScreen(chat);
-		}
+		startConection();
 	}
 
-	public boolean startConection() {
+	public void startConection() {
 		Pacote p = new Pacote(2020, portDestino, 7, -1, false, false, true, false, false, 0, 0, "Teste".getBytes());
 
 		try {
@@ -57,24 +46,33 @@ public class ClienteUDP extends Thread {
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
 			clientSocket.receive(pacote);
 			Pacote receiveP = deserializeObject(pacote.getData());
+			
 			System.out.println(new String(receiveP.dados));
+			
+			GDPServer server = new GDPServer(new DatagramSocket());
 
 			// enviando 3 via
 			p.dados = "Teste 3".getBytes();
 			p.syn = false;
 			p.numSeq = receiveP.numConfirmacao + 1;
 			p.numConfirmacao = receiveP.numSeq + 1;
+			p.portOrigem = server.socket.getLocalPort();
 			msgTcp = serializeObject(p);
+			
+			new Thread(server).start();
 
 			pkt.setData(msgTcp);
 			pkt.setLength(msgTcp.length);
 			clientSocket.send(pkt);
 			
-			return true;
-
+			Chat chat = new Chat(ipDestino, receiveP.portOrigem);
+			
+			server.chat = chat;
+			
+			chat.NewScreen(chat);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
 		}
 	}
 
