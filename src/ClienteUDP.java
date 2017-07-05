@@ -17,7 +17,7 @@ public class ClienteUDP extends Thread {
 	private ArrayList<String> listaIps = new ArrayList<>();
 	
 	private DatagramSocket clientSocket;
-
+	
 	public ClienteUDP(String ipDestino, int portDestino, ArrayList<Chat> listaJanelas, ArrayList<String> listaIps) {
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
@@ -31,17 +31,18 @@ public class ClienteUDP extends Thread {
 	}
 
 	public void run() {
-		startConection();
-		Chat chat = new Chat(ipDestino, portDestino);
-		
-		listaJanelas.add(chat);
-		listaIps.add(ipDestino);
-		
-		chat.NewScreen(chat);
+		if(startConection()) {
+			Chat chat = new Chat(ipDestino, portDestino);
+			
+			listaJanelas.add(chat);
+			listaIps.add(ipDestino);
+			
+			chat.NewScreen(chat);
+		}
 	}
 
-	public void startConection() {
-		Pacote p = new Pacote(2020, portDestino, 7, -1, false, false, true, false, 0, 0, "Teste".getBytes());
+	public boolean startConection() {
+		Pacote p = new Pacote(2020, portDestino, 7, -1, false, false, true, false, false, 0, 0, "Teste".getBytes());
 
 		try {
 
@@ -56,6 +57,7 @@ public class ClienteUDP extends Thread {
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
 			clientSocket.receive(pacote);
 			Pacote receiveP = deserializeObject(pacote.getData());
+			System.out.println(new String(receiveP.dados));
 
 			// enviando 3 via
 			p.dados = "Teste 3".getBytes();
@@ -67,9 +69,12 @@ public class ClienteUDP extends Thread {
 			pkt.setData(msgTcp);
 			pkt.setLength(msgTcp.length);
 			clientSocket.send(pkt);
+			
+			return true;
 
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 

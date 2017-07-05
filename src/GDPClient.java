@@ -9,13 +9,14 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GDPClient {
 
 	int sendBase;
 	int nextSeqNum;
-	static int a = 2030;
 
 	String ipDestino;
 	int portDestino;
@@ -23,16 +24,19 @@ public class GDPClient {
 	static int tamanhoJanela = 4;
 	static final int TAMANHO_PACOTE = 1000;
 
-	String pacote = "Olá";
+	Pacote pacote;
 	ArrayList<byte[]> listPacotes;
 
 	DatagramSocket entradaSocket;
 	DatagramSocket saidaSocket;
+	
+	static int a = 2030;
 
 	public GDPClient(String ipDestino, int portDestino) throws SocketException {
 
 		this.sendBase = 0;
 		this.nextSeqNum = 0;
+		this.pacote = new Pacote(-1, -1, -1, 0, false, false, false, false, false, 0, 0, null);
 
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
@@ -98,31 +102,31 @@ public class GDPClient {
 		@Override
 		public void run() {
 			try {
-				int numSeqPacotes = 0;
+				int ultimoNumSeq = -1;
 				while (true) {
 					byte[] segmento = null;
-					pacote = "" + numSeqPacotes; //teste
-					Pacote p = new Pacote(socketSaida.getLocalPort(), portDestino, numSeqPacotes,
-							numSeqPacotes + TAMANHO_PACOTE, false, false, false, false, 0, 0, pacote.getBytes());
-					if (p.numSeq >= sendBase) {
-						if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
-							if (nextSeqNum == sendBase) {
-								// inicia timer
-							}
-							if ((nextSeqNum / TAMANHO_PACOTE) < listPacotes.size()) {
-								segmento = listPacotes.get(nextSeqNum / TAMANHO_PACOTE);
-							} else { // se não for retransmissão
-								segmento = serializeObject(p);
+					//pacote.portOrigem = 2030;
+					if(ultimoNumSeq != pacote.numSeq) {
+						if (pacote.numSeq >= sendBase) {
+							if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
+								if (nextSeqNum == sendBase) {
+									// inicia timer
+								}
+								if ((nextSeqNum / TAMANHO_PACOTE) < listPacotes.size()) {
+									segmento = listPacotes.get(nextSeqNum / TAMANHO_PACOTE);
+								} else { // se não for retransmissão
+									segmento = serializeObject(pacote);
+									listPacotes.add(segmento);
+								}
+								
+								nextSeqNum += TAMANHO_PACOTE;
+								socketSaida.send(new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
+							} else {
 								listPacotes.add(segmento);
 							}
-							
-							nextSeqNum += TAMANHO_PACOTE;
-							socketSaida.send(new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
-						} else {
-							listPacotes.add(segmento);
 						}
-						numSeqPacotes += TAMANHO_PACOTE; //teste
 					}
+					ultimoNumSeq = pacote.numSeq;
 					sleep(7);
 				}
 			} catch (IOException | InterruptedException e) {
@@ -142,6 +146,12 @@ public class GDPClient {
 		public ThreadEntrada(DatagramSocket socketEntrada) {
 			this.socketEntrada = socketEntrada;
 		}
+		
+		int getnumAck(byte[] pacote) {
+            byte[] numAckBytes = Arrays.copyOfRange(pacote, 0, 28);
+            return ByteBuffer.wrap(numAckBytes).getInt();
+        }
+
 
 		@Override
 		public void run() {
@@ -150,7 +160,7 @@ public class GDPClient {
 			while (true) {
 				try {
 					socketEntrada.receive(packet);
-					int numAck = 0;
+					int numAck = getnumAck(ack);
 					// ACK duplicado
 					if (sendBase == numAck + TAMANHO_PACOTE) {
 						nextSeqNum = sendBase;

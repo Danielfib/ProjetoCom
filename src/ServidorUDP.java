@@ -52,22 +52,24 @@ public class ServidorUDP implements Runnable {
 				int portaDestino = pacote.getPort();
 
 				Pacote p = deserializeObject(pacote.getData());
-				PQPacotes.add(p);// adiciona no buffer
 
 				int serverIsn = -2;
 
 				if (p.syn) {
 					Pacote synAck = new Pacote(porta, portaDestino, serverIsn, p.numSeq + 1, false, false, true, false,
-							0, 0, "Teste 2".getBytes());
+							false, 0, 0, "Teste 2".getBytes());
 
 					byte msgTcp[] = serializeObject(synAck);
 					DatagramPacket pkt = new DatagramPacket(msgTcp, msgTcp.length, ipDestinoInet, 2020);
+					
+					System.out.println(new String(p.dados));
 
 					serverSocket.send(pkt);
-					PQPacotes.remove();
 				} else {
 					if (p.numConfirmacao == (serverIsn + 1)) {
 						// recebeu a 3 via
+						
+						System.out.println(new String(p.dados));
 
 						// aqui eh pra abrir a janela caso alguem dê "conversar"
 						// comigo:
@@ -82,14 +84,18 @@ public class ServidorUDP implements Runnable {
 					} else {
 						// Dados da aplicação
 						// recebendo a mensagem, direcionando para o chat certo:
-						System.out.println(new String(p.dados));
+						
+						PQPacotes.add(p);// adiciona no buffer
+						
+						/*System.out.println(new String(p.dados));
+						
 						for (int c = 0; c < listaIps.size(); c++) {
 							if (ipDestino.equals(listaIps.get(c))) {
 								listaJanelas.get(c).addText(new String(PQPacotes.peek().dados));
 								// listaJanelas.get(c).addText(new
 								// String(p.dados));
 							}
-						}
+						}*/
 						// int numSeq =
 						// ByteBuffer.wrap(Arrays.copyOfRange(dados, 0,
 						// CABECALHO)).getInt();
