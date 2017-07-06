@@ -41,6 +41,10 @@ public class GDPClient {
 		this.portDestino = portDestino;
 
 		listPacotes = new ArrayList<>(tamanhoJanela);
+		
+		janelaRecepcao  = 1000000;
+		lastByteSent = -1;
+		lastByteAcked = -1;
 
 		try {
 			entradaSocket = new DatagramSocket(2045);
@@ -70,45 +74,18 @@ public class GDPClient {
 			this.ipDestino = InetAddress.getByName(ipDestino);
 		}
 
-		public Pacote deserializeObject(byte[] dado) {
-			ByteArrayInputStream bao = new ByteArrayInputStream(dado);
-			ObjectInputStream ous;
-			try {
-				ous = new ObjectInputStream(bao);
-				return (Pacote) ous.readObject();
-			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-
-		public byte[] serializeObject(Pacote p) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos;
-			byte msgTcp[] = null;
-			try {
-				oos = new ObjectOutputStream(baos);
-				oos.writeObject(p);
-				oos.close();
-				msgTcp = baos.toByteArray();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return msgTcp;
-		}
-
 		@Override
 		public void run() {
 			try {
 				int ultimoNumSeq = -1;
 				Pacote pacote;
 				while (true) {
-					//if(janelaRecepcao >= (lastByteSent - lastByteAcked)) {
+					if(janelaRecepcao >= (lastByteSent - lastByteAcked)) {
 						byte[] segmento = null;
 						if (!listPacotes.isEmpty() && (listPacotes.size() > (nextSeqNum / TAMANHO_PACOTE))) {
 							pacote = listPacotes.get(nextSeqNum / TAMANHO_PACOTE);
 							if (ultimoNumSeq != pacote.numSeq) {
-								pacote.portOrigem = 2045;//socketSaida.getLocalPort();
+								pacote.portOrigem = socketSaida.getLocalPort();
 								if (pacote.numSeq >= sendBase) {
 									if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
 										if (nextSeqNum == sendBase) {
@@ -116,7 +93,7 @@ public class GDPClient {
 										}
 										segmento = serializeObject(pacote);
 	
-										lastByteSent = nextSeqNum;
+										lastByteSent = pacote.numSeq;
 										nextSeqNum += TAMANHO_PACOTE;
 										socketSaida.send(
 												new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
@@ -125,7 +102,11 @@ public class GDPClient {
 								}
 							}
 						}
-					//}
+					} else if(janelaRecepcao == 0) {
+						//envia bytes de monitoramento para saber quando a janela diminuirá
+						byte[] enviaDados = new byte[0];
+						socketSaida.send(new DatagramPacket(enviaDados, enviaDados.length, ipDestino, portDestino));
+					}
 					sleep(7);
 				}
 			} catch (IOException | InterruptedException e) {
@@ -153,25 +134,25 @@ public class GDPClient {
 
 		@Override
 		public void run() {
-			byte[] ack = new byte[4];
+			byte[] ack = new byte[TAMANHO_PACOTE];
 			DatagramPacket packet = new DatagramPacket(ack, ack.length);
 			while (true) {
 				try {
 					socketEntrada.receive(packet);
-					int numAck = getnumAck(ack);
+					Pacote Ack = deserializeObject(ack);
 					
-					//janelaRecepcao = ;
+					janelaRecepcao = Ack.janelaReceptor;
 					
-					System.out.println(numAck);
+					System.out.println(Ack.numConfirmacao);
 					
 					// ACK duplicado
-					if (sendBase == numAck) {
+					if (sendBase == Ack.numConfirmacao) {
 						nextSeqNum = sendBase;
 					} else { // ACK normal
-						sendBase = numAck;
+						sendBase = Ack.numConfirmacao;
 					}
 					
-					lastByteAcked = sendBase;
+					lastByteAcked = sendBase - 1;
 					
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -180,5 +161,31 @@ public class GDPClient {
 		}
 
 	}
+	
+	public Pacote deserializeObject(byte[] dado) {
+		ByteArrayInputStream bao = new ByteArrayInputStream(dado);
+		ObjectInputStream ous;
+		try {
+			ous = new ObjectInputStream(bao);
+			return (Pacote) ous.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
+	public byte[] serializeObject(Pacote p) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos;
+		byte msgTcp[] = null;
+		try {
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(p);
+			oos.close();
+			msgTcp = baos.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return msgTcp;
+	}
 }

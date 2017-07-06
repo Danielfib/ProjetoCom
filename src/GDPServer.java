@@ -23,7 +23,8 @@ public class GDPServer implements Runnable {
 	private ArrayList<Pacote> bufferRcv = new ArrayList<>();
 
 	static final int CABECALHO = 29;// se mudar, só mudar aqui
-	static final int TAM_PKT = 1000 + CABECALHO;
+	static final int TAM_DADOS = 1000;
+	static final int TAM_PKT = TAM_DADOS + CABECALHO;
 	final int RCV_BUFFER = 1000000;
 	static final int USER_PERCENT = 77;
 
@@ -35,50 +36,85 @@ public class GDPServer implements Runnable {
 	public void run() {
 		int proxNumSeq = 0;
 		int ultimoNumSeq = -1;
-		int rwnd;
+		int rwnd= RCV_BUFFER;
 		int contPktPerdidos = 0;
+		int lastByteRcvd = -TAM_DADOS;
+		int lastByteRead = -TAM_DADOS - 1;
+		
+		byte[] dados = new byte[TAM_PKT];
+		DatagramPacket pkt = new DatagramPacket(dados, dados.length);
 
 		while (true) {
 
-			byte[] dados = new byte[TAM_PKT];
-			DatagramPacket pkt = new DatagramPacket(dados, dados.length);
-
 			try {
 				socket.receive(pkt);
-
+				
 				InetAddress ipDestinoInet = pkt.getAddress();
+				
+				if(pkt.getLength() == 1) {
+					byte[] ack = serializeObject(new Pacote(socket.getLocalPort(), pkt.getPort(), -1, -1, true, false, false, false, 
+							false, rwnd, 0, null));
+					
+					socket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, pkt.getPort()));
+					continue;
+				}
+
 
 				Pacote p = deserializeObject(pkt.getData());
 				System.out.println("Server: " + new String(p.dados));
 				
 				Random r = new Random();
 
-				//if(r.nextInt(99) < USER_PERCENT) {
-					bufferRcv.add((p.numSeq / (TAM_PKT - CABECALHO)), p); // adiciona no buffer
+				if(r.nextInt(99) < USER_PERCENT) {
 					
-					rwnd = RCV_BUFFER - (0); //tamanho da janela de recepção -> mandar para o remetente
-	
 					int numSeq = p.numSeq;
-	
+					
+					if(!bufferRcv.isEmpty() && (p.numSeq < bufferRcv.get(bufferRcv.size() - 1).numSeq)) {
+						bufferRcv.add((p.numSeq / TAM_DADOS), p); // adiciona no buffer						
+					} else {
+						bufferRcv.add(p);
+						lastByteRcvd = p.numSeq + TAM_DADOS - 1;
+					}
+					
 					// se o pacote recebido estiver em ordem:
 					if (numSeq == proxNumSeq) {
 	
-						chat.addText(new String(p.dados) + "\n");
-						proxNumSeq = numSeq + (TAM_PKT - CABECALHO);
-						byte[] ack = criarPacote(proxNumSeq);
+						for (Pacote b : bufferRcv) {
+							if(b.numSeq == (lastByteRead + TAM_DADOS)) {
+								chat.addText(new String(p.dados) + "\n"); //entrega a aplicação
+								lastByteRead += TAM_DADOS;
+								bufferRcv.remove(lastByteRead / TAM_DADOS);
+							} else {
+								break;
+							}
+						}
+						
+						rwnd = RCV_BUFFER - (lastByteRcvd - lastByteRead); //tamanho da janela de recepção -> mandar para o remetente
+						
+						proxNumSeq = lastByteRead + TAM_DADOS;
+						
+						//byte[] ack = criarPacote(proxNumSeq);
+						
+						byte[] ack = serializeObject(new Pacote(socket.getLocalPort(), p.portOrigem, -1, proxNumSeq, true, 
+								false, false, false, false, rwnd, 0, null));
+						
 						socket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, p.portOrigem));
 						System.out.println("ack enviado: " + proxNumSeq); // debug
 	
 						ultimoNumSeq = proxNumSeq;
 					} else {
-						byte[] ackDuprikred = criarPacote(ultimoNumSeq);
+						//byte[] ackDuprikred = criarPacote(ultimoNumSeq);
+						
+						byte[] ackDuprikred = serializeObject(new Pacote(socket.getLocalPort(), p.portOrigem, -1, ultimoNumSeq, true, 
+								false, false, false, false, rwnd, 0, null));
+						
 						socket.send(new DatagramPacket(ackDuprikred, ackDuprikred.length, ipDestinoInet, p.portOrigem));
 						System.out.println("ack duplicado enviado: " + ultimoNumSeq);
 					}
-				//} else {
-					//contPktPerdidos++;
-					//chat.label.setText(contPktPerdidos + "");
-				//}
+				} else {
+					contPktPerdidos++;
+					chat.label.setText(contPktPerdidos + "");
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
