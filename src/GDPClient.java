@@ -23,12 +23,13 @@ public class GDPClient {
 
 	static int tamanhoJanela = 4;
 	static final int TAMANHO_PACOTE = 1000;
+	int a = 2045;
 
 	ArrayList<Pacote> listPacotes;
 
 	DatagramSocket entradaSocket;
 	DatagramSocket saidaSocket;
-	
+
 	public GDPClient(String ipDestino, int portDestino) throws SocketException {
 
 		this.sendBase = 0;
@@ -101,8 +102,9 @@ public class GDPClient {
 				Pacote pacote;
 				while (true) {
 					byte[] segmento = null;
-					if((pacote = listPacotes.get(nextSeqNum / TAMANHO_PACOTE)) != null) {
-						if(ultimoNumSeq != pacote.numSeq) {
+					if (!listPacotes.isEmpty() && (listPacotes.size() > (nextSeqNum / TAMANHO_PACOTE))) {
+						pacote = listPacotes.get(nextSeqNum / TAMANHO_PACOTE);
+						if (ultimoNumSeq != pacote.numSeq) {
 							pacote.portOrigem = socketSaida.getLocalPort();
 							if (pacote.numSeq >= sendBase) {
 								if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
@@ -114,9 +116,10 @@ public class GDPClient {
 									} else { // se não for retransmissão
 										segmento = serializeObject(pacote);
 									}
-									
+
 									nextSeqNum += TAMANHO_PACOTE;
-									socketSaida.send(new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
+									socketSaida.send(
+											new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
 									ultimoNumSeq = pacote.numSeq;
 								}
 							}
@@ -141,12 +144,11 @@ public class GDPClient {
 		public ThreadEntrada(DatagramSocket socketEntrada) {
 			this.socketEntrada = socketEntrada;
 		}
-		
-		int getnumAck(byte[] pacote) {
-            byte[] numAckBytes = Arrays.copyOfRange(pacote, 0, 28);
-            return ByteBuffer.wrap(numAckBytes).getInt();
-        }
 
+		int getnumAck(byte[] pacote) {
+			byte[] numAckBytes = Arrays.copyOfRange(pacote, 0, 28);
+			return ByteBuffer.wrap(numAckBytes).getInt();
+		}
 
 		@Override
 		public void run() {

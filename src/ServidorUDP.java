@@ -44,7 +44,6 @@ public class ServidorUDP implements Runnable {
 					byte msgTcp[] = serializeObject(synAck);
 					DatagramPacket pkt = new DatagramPacket(msgTcp, msgTcp.length, ipDestinoInet, portaDestino);
 					
-					new Thread(serverGdp).start();
 					
 					System.out.println(new String(p.dados));
 
@@ -59,6 +58,8 @@ public class ServidorUDP implements Runnable {
 					serverGdp.chat = chat;
 						
 					chat.NewScreen(chat);
+					
+					new Thread(serverGdp).start();
 				}
 			}
 		} catch (IOException e) {

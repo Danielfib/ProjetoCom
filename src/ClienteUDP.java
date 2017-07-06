@@ -59,7 +59,6 @@ public class ClienteUDP extends Thread {
 			p.portOrigem = server.socket.getLocalPort();
 			msgTcp = serializeObject(p);
 			
-			new Thread(server).start();
 
 			pkt.setData(msgTcp);
 			pkt.setLength(msgTcp.length);
@@ -70,6 +69,8 @@ public class ClienteUDP extends Thread {
 			server.chat = chat;
 			
 			chat.NewScreen(chat);
+			
+			new Thread(server).start();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
