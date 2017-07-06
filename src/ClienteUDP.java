@@ -46,8 +46,9 @@ public class ClienteUDP extends Thread {
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
 			clientSocket.receive(pacote);
 			Pacote receiveP = deserializeObject(pacote.getData());
+			int porta = receiveP.portOrigem;
 			
-			System.out.println(new String(receiveP.dados));
+			//System.out.println(new String(receiveP.dados));
 			
 			GDPServer server = new GDPServer(new DatagramSocket());
 
@@ -64,7 +65,7 @@ public class ClienteUDP extends Thread {
 			pkt.setLength(msgTcp.length);
 			clientSocket.send(pkt);
 			
-			Chat chat = new Chat(ipDestino, receiveP.portOrigem);
+			Chat chat = new Chat(ipDestino, porta);
 			
 			server.chat = chat;
 			

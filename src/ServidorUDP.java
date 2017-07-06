@@ -45,13 +45,13 @@ public class ServidorUDP implements Runnable {
 					DatagramPacket pkt = new DatagramPacket(msgTcp, msgTcp.length, ipDestinoInet, portaDestino);
 					
 					
-					System.out.println(new String(p.dados));
+					//System.out.println(new String(p.dados));
 
 					serverSocket.send(pkt);
 				} else {
 					//recebeu a 3 via
 
-					System.out.println(new String(p.dados));
+					//System.out.println(new String(p.dados));
 						
 					Chat chat = new Chat(ipDestino, p.portOrigem);
 

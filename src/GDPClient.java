@@ -23,7 +23,6 @@ public class GDPClient {
 
 	static int tamanhoJanela = 4;
 	static final int TAMANHO_PACOTE = 1000;
-	int a = 2045;
 
 	ArrayList<Pacote> listPacotes;
 
@@ -102,20 +101,18 @@ public class GDPClient {
 				Pacote pacote;
 				while (true) {
 					byte[] segmento = null;
+					System.out.println(listPacotes.isEmpty());
 					if (!listPacotes.isEmpty() && (listPacotes.size() > (nextSeqNum / TAMANHO_PACOTE))) {
 						pacote = listPacotes.get(nextSeqNum / TAMANHO_PACOTE);
+						System.out.println(pacote.numSeq + " " + new String(pacote.dados));
 						if (ultimoNumSeq != pacote.numSeq) {
-							pacote.portOrigem = socketSaida.getLocalPort();
+							pacote.portOrigem = 2045;//socketSaida.getLocalPort();
 							if (pacote.numSeq >= sendBase) {
 								if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
 									if (nextSeqNum == sendBase) {
 										// inicia timer
 									}
-									if ((nextSeqNum / TAMANHO_PACOTE) < listPacotes.size()) {
-										segmento = serializeObject(listPacotes.get(nextSeqNum / TAMANHO_PACOTE));
-									} else { // se não for retransmissão
-										segmento = serializeObject(pacote);
-									}
+									segmento = serializeObject(pacote);
 
 									nextSeqNum += TAMANHO_PACOTE;
 									socketSaida.send(

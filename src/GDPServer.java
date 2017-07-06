@@ -30,10 +30,10 @@ public class GDPServer implements Runnable {
 
 	@Override
 	public void run() {
+		int proxNumSeq = 0;
+		int ultimoNumSeq = -1;
 
 		while (true) {
-			int proxNumSeq = 0;
-			int ultimoNumSeq = -1;
 
 			byte[] dados = new byte[TAM_PKT];
 			DatagramPacket pkt = new DatagramPacket(dados, dados.length);
@@ -44,6 +44,7 @@ public class GDPServer implements Runnable {
 				InetAddress ipDestinoInet = pkt.getAddress();
 
 				Pacote p = deserializeObject(pkt.getData());
+				System.out.println("Server: " + new String(p.dados));
 
 				bufferRcv.add((p.numSeq / (TAM_PKT - CABECALHO)), p); // adiciona no buffer
 
@@ -55,13 +56,13 @@ public class GDPServer implements Runnable {
 					chat.addText(new String(p.dados) + "\n");
 					proxNumSeq = numSeq + (TAM_PKT - CABECALHO);
 					byte[] ack = criarPacote(proxNumSeq);
-					socket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, 2045));
+					socket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, p.portOrigem));
 					System.out.println("ack enviado: " + proxNumSeq); // debug
 
 					ultimoNumSeq = proxNumSeq;
 				} else {
 					byte[] ackDuprikred = criarPacote(ultimoNumSeq);
-					socket.send(new DatagramPacket(ackDuprikred, ackDuprikred.length, ipDestinoInet, 2045));
+					socket.send(new DatagramPacket(ackDuprikred, ackDuprikred.length, ipDestinoInet, p.portOrigem));
 					System.out.println("ack duplicado enviado: " + ultimoNumSeq);
 
 				}
