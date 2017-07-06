@@ -23,6 +23,7 @@ public class Chat extends JFrame {
 	private String ipDestino;
 	private int portDestino;
 	private int numSeq;
+	JLabel label;
 
 	JTextArea textArea = new JTextArea();
 
@@ -54,7 +55,7 @@ public class Chat extends JFrame {
 	 */
 	public Chat(String ipDestino, int portDestino) {
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		setBounds(100, 100, 697, 489);
+		setBounds(100, 100, 764, 489);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -110,13 +111,21 @@ public class Chat extends JFrame {
 			}
 		});
 		btnAnexo.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		btnAnexo.setBounds(570, 19, 97, 25);
+		btnAnexo.setBounds(619, 20, 97, 25);
 		contentPane.add(btnAnexo);
 
 		JLabel lblNewLabel = new JLabel("Você esta conversando com: " + ipDestino);
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblNewLabel.setBounds(10, 19, 355, 25);
 		contentPane.add(lblNewLabel);
+		
+		JLabel lblPktsPerdidos = new JLabel("Pkts perdidos:");
+		lblPktsPerdidos.setBounds(398, 27, 97, 14);
+		contentPane.add(lblPktsPerdidos);
+		
+		label = new JLabel("");
+		label.setBounds(516, 27, 63, 14);
+		contentPane.add(label);
 
 	}
 

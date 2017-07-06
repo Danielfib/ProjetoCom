@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 public class GDPServer implements Runnable {
 
@@ -24,6 +25,7 @@ public class GDPServer implements Runnable {
 	static final int CABECALHO = 29;// se mudar, só mudar aqui
 	static final int TAM_PKT = 1000 + CABECALHO;
 	final int RCV_BUFFER = 1000000;
+	static final int USER_PERCENT = 77;
 
 	public GDPServer(DatagramSocket socket) {
 		this.socket = socket;
@@ -34,6 +36,7 @@ public class GDPServer implements Runnable {
 		int proxNumSeq = 0;
 		int ultimoNumSeq = -1;
 		int rwnd;
+		int contPktPerdidos = 0;
 
 		while (true) {
 
@@ -47,29 +50,35 @@ public class GDPServer implements Runnable {
 
 				Pacote p = deserializeObject(pkt.getData());
 				System.out.println("Server: " + new String(p.dados));
-
-				bufferRcv.add((p.numSeq / (TAM_PKT - CABECALHO)), p); // adiciona no buffer
 				
-				rwnd = RCV_BUFFER - (0); //tamanho da janela de recepção -> mandar para o remetente
+				Random r = new Random();
 
-				int numSeq = p.numSeq;
-
-				// se o pacote recebido estiver em ordem:
-				if (numSeq == proxNumSeq) {
-
-					chat.addText(new String(p.dados) + "\n");
-					proxNumSeq = numSeq + (TAM_PKT - CABECALHO);
-					byte[] ack = criarPacote(proxNumSeq);
-					socket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, p.portOrigem));
-					System.out.println("ack enviado: " + proxNumSeq); // debug
-
-					ultimoNumSeq = proxNumSeq;
-				} else {
-					byte[] ackDuprikred = criarPacote(ultimoNumSeq);
-					socket.send(new DatagramPacket(ackDuprikred, ackDuprikred.length, ipDestinoInet, p.portOrigem));
-					System.out.println("ack duplicado enviado: " + ultimoNumSeq);
-
-				}
+				//if(r.nextInt(99) < USER_PERCENT) {
+					bufferRcv.add((p.numSeq / (TAM_PKT - CABECALHO)), p); // adiciona no buffer
+					
+					rwnd = RCV_BUFFER - (0); //tamanho da janela de recepção -> mandar para o remetente
+	
+					int numSeq = p.numSeq;
+	
+					// se o pacote recebido estiver em ordem:
+					if (numSeq == proxNumSeq) {
+	
+						chat.addText(new String(p.dados) + "\n");
+						proxNumSeq = numSeq + (TAM_PKT - CABECALHO);
+						byte[] ack = criarPacote(proxNumSeq);
+						socket.send(new DatagramPacket(ack, ack.length, ipDestinoInet, p.portOrigem));
+						System.out.println("ack enviado: " + proxNumSeq); // debug
+	
+						ultimoNumSeq = proxNumSeq;
+					} else {
+						byte[] ackDuprikred = criarPacote(ultimoNumSeq);
+						socket.send(new DatagramPacket(ackDuprikred, ackDuprikred.length, ipDestinoInet, p.portOrigem));
+						System.out.println("ack duplicado enviado: " + ultimoNumSeq);
+					}
+				//} else {
+					//contPktPerdidos++;
+					//chat.label.setText(contPktPerdidos + "");
+				//}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

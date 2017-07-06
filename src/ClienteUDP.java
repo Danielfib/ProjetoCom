@@ -48,7 +48,7 @@ public class ClienteUDP extends Thread {
 			Pacote receiveP = deserializeObject(pacote.getData());
 			int porta = receiveP.portOrigem;
 			
-			//System.out.println(new String(receiveP.dados));
+			System.out.println(new String(receiveP.dados));
 			
 			GDPServer server = new GDPServer(new DatagramSocket());
 
