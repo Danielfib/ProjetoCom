@@ -23,6 +23,8 @@ public class ServidorUDP implements Runnable {
 			byte[] dados = new byte[1029];
 			DatagramPacket pacote = new DatagramPacket(dados, dados.length);
 
+			GDPServer serverGdp = new GDPServer(new DatagramSocket());
+			
 			while (true) {
 				serverSocket.receive(pacote);
 
@@ -35,7 +37,6 @@ public class ServidorUDP implements Runnable {
 
 				int serverIsn = -2;
 				
-				GDPServer serverGdp = new GDPServer(new DatagramSocket());
 
 				if (p.syn) {
 					Pacote synAck = new Pacote(serverGdp.socket.getLocalPort(), portaDestino, serverIsn, p.numSeq + 1, false, false, true, false,

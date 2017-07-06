@@ -28,6 +28,9 @@ public class GDPClient {
 
 	DatagramSocket entradaSocket;
 	DatagramSocket saidaSocket;
+	int janelaRecepcao;
+	int lastByteSent;
+	int lastByteAcked;
 
 	public GDPClient(String ipDestino, int portDestino) throws SocketException {
 
@@ -100,28 +103,29 @@ public class GDPClient {
 				int ultimoNumSeq = -1;
 				Pacote pacote;
 				while (true) {
-					byte[] segmento = null;
-					System.out.println(listPacotes.isEmpty());
-					if (!listPacotes.isEmpty() && (listPacotes.size() > (nextSeqNum / TAMANHO_PACOTE))) {
-						pacote = listPacotes.get(nextSeqNum / TAMANHO_PACOTE);
-						System.out.println(pacote.numSeq + " " + new String(pacote.dados));
-						if (ultimoNumSeq != pacote.numSeq) {
-							pacote.portOrigem = 2045;//socketSaida.getLocalPort();
-							if (pacote.numSeq >= sendBase) {
-								if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
-									if (nextSeqNum == sendBase) {
-										// inicia timer
+					//if(janelaRecepcao >= (lastByteSent - lastByteAcked)) {
+						byte[] segmento = null;
+						if (!listPacotes.isEmpty() && (listPacotes.size() > (nextSeqNum / TAMANHO_PACOTE))) {
+							pacote = listPacotes.get(nextSeqNum / TAMANHO_PACOTE);
+							if (ultimoNumSeq != pacote.numSeq) {
+								pacote.portOrigem = 2045;//socketSaida.getLocalPort();
+								if (pacote.numSeq >= sendBase) {
+									if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
+										if (nextSeqNum == sendBase) {
+											// inicia timer
+										}
+										segmento = serializeObject(pacote);
+	
+										lastByteSent = nextSeqNum;
+										nextSeqNum += TAMANHO_PACOTE;
+										socketSaida.send(
+												new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
+										ultimoNumSeq = pacote.numSeq;
 									}
-									segmento = serializeObject(pacote);
-
-									nextSeqNum += TAMANHO_PACOTE;
-									socketSaida.send(
-											new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
-									ultimoNumSeq = pacote.numSeq;
 								}
 							}
 						}
-					}
+					//}
 					sleep(7);
 				}
 			} catch (IOException | InterruptedException e) {
@@ -155,13 +159,20 @@ public class GDPClient {
 				try {
 					socketEntrada.receive(packet);
 					int numAck = getnumAck(ack);
+					
+					//janelaRecepcao = ;
+					
 					System.out.println(numAck);
+					
 					// ACK duplicado
 					if (sendBase == numAck) {
 						nextSeqNum = sendBase;
 					} else { // ACK normal
 						sendBase = numAck;
 					}
+					
+					lastByteAcked = sendBase;
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

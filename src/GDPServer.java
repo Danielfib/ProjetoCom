@@ -21,8 +21,9 @@ public class GDPServer implements Runnable {
 	
 	private ArrayList<Pacote> bufferRcv = new ArrayList<>();
 
-	static final int CABECALHO = 28;// se mudar, só mudar aqui
+	static final int CABECALHO = 29;// se mudar, só mudar aqui
 	static final int TAM_PKT = 1000 + CABECALHO;
+	final int RCV_BUFFER = 1000000;
 
 	public GDPServer(DatagramSocket socket) {
 		this.socket = socket;
@@ -32,6 +33,7 @@ public class GDPServer implements Runnable {
 	public void run() {
 		int proxNumSeq = 0;
 		int ultimoNumSeq = -1;
+		int rwnd;
 
 		while (true) {
 
@@ -47,6 +49,8 @@ public class GDPServer implements Runnable {
 				System.out.println("Server: " + new String(p.dados));
 
 				bufferRcv.add((p.numSeq / (TAM_PKT - CABECALHO)), p); // adiciona no buffer
+				
+				rwnd = RCV_BUFFER - (0); //tamanho da janela de recepção -> mandar para o remetente
 
 				int numSeq = p.numSeq;
 
