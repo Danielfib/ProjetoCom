@@ -12,6 +12,9 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Semaphore;
 
 public class GDPClient {
 
@@ -20,6 +23,9 @@ public class GDPClient {
 
 	String ipDestino;
 	int portDestino;
+	
+    Timer timer;
+    Semaphore semaforo;
 
 	static int tamanhoJanela = 4;
 	static final int TAMANHO_PACOTE = 1000;
@@ -31,6 +37,8 @@ public class GDPClient {
 	int janelaRecepcao;
 	int lastByteSent;
 	int lastByteAcked;
+	
+	private static int porta = 2045;
 
 	public GDPClient(String ipDestino, int portDestino) throws SocketException {
 
@@ -39,6 +47,8 @@ public class GDPClient {
 
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
+		
+		semaforo = new Semaphore(1);
 
 		listPacotes = new ArrayList<>(tamanhoJanela);
 		
@@ -47,7 +57,8 @@ public class GDPClient {
 		lastByteAcked = -1;
 
 		try {
-			entradaSocket = new DatagramSocket(2045);
+			entradaSocket = new DatagramSocket(porta);
+			porta += 5;
 			saidaSocket = new DatagramSocket();
 
 			ThreadEntrada threadIn = new ThreadEntrada(entradaSocket);
@@ -61,6 +72,31 @@ public class GDPClient {
 		}
 		// variáveis de estado
 	}
+	
+    public class Temporizador extends TimerTask {
+    	 
+        public void run() {
+            try {
+                semaforo.acquire();
+                System.out.println("Cliente: Tempo expirado!");
+                nextSeqNum = sendBase;  //reseta numero de sequencia
+                semaforo.release();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+ 
+    //para iniciar ou parar o temporizador
+    public void manipularTemporizador(boolean novoTimer) {
+        if (timer != null) {
+            timer.cancel();
+        }
+        if (novoTimer) {
+            timer = new Timer();
+            timer.schedule(new Temporizador(), 1000);
+        }
+    }
 
 	public class ThreadSaida extends Thread {
 
@@ -84,12 +120,14 @@ public class GDPClient {
 						byte[] segmento = null;
 						if (!listPacotes.isEmpty() && (listPacotes.size() > (nextSeqNum / TAMANHO_PACOTE))) {
 							pacote = listPacotes.get(nextSeqNum / TAMANHO_PACOTE);
-							if (ultimoNumSeq != pacote.numSeq) {
-								pacote.portOrigem = socketSaida.getLocalPort();
+							if (ultimoNumSeq != pacote.numSeq || sendBase == nextSeqNum) {
+								pacote.portOrigem = entradaSocket.getLocalPort();
 								if (pacote.numSeq >= sendBase) {
 									if (nextSeqNum < sendBase + (tamanhoJanela * TAMANHO_PACOTE)) {
+										semaforo.acquire();
 										if (nextSeqNum == sendBase) {
 											// inicia timer
+											manipularTemporizador(true);
 										}
 										segmento = serializeObject(pacote);
 	
@@ -98,6 +136,9 @@ public class GDPClient {
 										socketSaida.send(
 												new DatagramPacket(segmento, segmento.length, ipDestino, portDestino));
 										ultimoNumSeq = pacote.numSeq;
+										
+										semaforo.release();
+										
 									}
 								}
 							}
@@ -139,7 +180,7 @@ public class GDPClient {
 			while (true) {
 				try {
 					socketEntrada.receive(packet);
-					Pacote Ack = deserializeObject(ack);
+					Pacote Ack = deserializeObject(packet.getData());
 					
 					janelaRecepcao = Ack.janelaReceptor;
 					
@@ -147,14 +188,24 @@ public class GDPClient {
 					
 					// ACK duplicado
 					if (sendBase == Ack.numConfirmacao) {
+						semaforo.acquire();
+                        manipularTemporizador(false);
 						nextSeqNum = sendBase;
+						semaforo.release();
 					} else { // ACK normal
 						sendBase = Ack.numConfirmacao;
+						semaforo.acquire();
+						if(sendBase == nextSeqNum) {
+							manipularTemporizador(false);
+						} else {
+							manipularTemporizador(true);
+						}
+						semaforo.release();
 					}
 					
-					lastByteAcked = sendBase - 1;
+					lastByteAcked = sendBase;
 					
-				} catch (IOException e) {
+				} catch (IOException | InterruptedException e) {
 					e.printStackTrace();
 				}
 			}

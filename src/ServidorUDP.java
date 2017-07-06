@@ -16,7 +16,7 @@ public class ServidorUDP implements Runnable {
 	public void run() {
 
 		try {
-			int porta = 2022;
+			int porta = 2032;
 
 			DatagramSocket serverSocket = new DatagramSocket(porta);
 

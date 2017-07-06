@@ -100,9 +100,9 @@ public class Cadastrar extends JFrame {
 
 				} else {
 					ArrayList<String> dados = new ArrayList();
-					interfaceServer.addLinhas(dados, "offline", nome, ip, porta);
-					interfaceServer.listaCadastros.add(dados);
-					System.out.println(interfaceServer.listaCadastros.toString());
+					InterfaceServer.addLinhas(dados, "offline", nome, ip, porta);
+					InterfaceServer.listaCadastros.add(dados);
+					System.out.println(InterfaceServer.listaCadastros.toString());
 					fecharJanela();
 					
 				}

@@ -13,6 +13,7 @@ public class ClienteUDP extends Thread {
 
 	private String ipDestino;
 	private int portDestino;
+	private static int porta = 2020;
 	
 	private DatagramSocket clientSocket;
 	
@@ -20,7 +21,8 @@ public class ClienteUDP extends Thread {
 		this.ipDestino = ipDestino;
 		this.portDestino = portDestino;
 		try {
-			clientSocket = new DatagramSocket(2020);
+			clientSocket = new DatagramSocket(porta);
+			porta++;
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
@@ -31,7 +33,7 @@ public class ClienteUDP extends Thread {
 	}
 
 	public void startConection() {
-		Pacote p = new Pacote(2020, portDestino, 7, -1, false, false, true, false, false, 0, 0, "Teste".getBytes());
+		Pacote p = new Pacote(clientSocket.getLocalPort(), portDestino, 7, -1, false, false, true, false, false, 0, 0, "Teste".getBytes());
 
 		try {
 

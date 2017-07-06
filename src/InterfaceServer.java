@@ -1,12 +1,7 @@
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.util.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,7 +9,6 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JTextArea;
 import javax.swing.Timer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -26,7 +20,7 @@ import javax.swing.JTable;
 import java.awt.Color;
 import javax.swing.JScrollPane;
 
-public class interfaceServer extends JFrame {
+public class InterfaceServer extends JFrame {
 
 	private static JPanel contentPane;
 
@@ -44,7 +38,7 @@ public class interfaceServer extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					interfaceServer frame = new interfaceServer();
+					InterfaceServer frame = new InterfaceServer();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -57,7 +51,7 @@ public class interfaceServer extends JFrame {
 	 * Create the frame.
 	 * @throws IOException 
 	 */
-	public interfaceServer() throws IOException {
+	public InterfaceServer() throws IOException {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 602, 454);
 		contentPane = new JPanel();
@@ -65,11 +59,11 @@ public class interfaceServer extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		JLabel lblEssesSoOs = new JLabel("Esses s\u00E3o os usuarios cadastrados e as condi\u00E7\u00F5es deles:");
+		JLabel lblEssesSoOs = new JLabel("Esses sao os usuarios cadastrados e as condicoes deles:");
 		lblEssesSoOs.setBounds(10, 21, 313, 14);
 		contentPane.add(lblEssesSoOs);
 
-		JButton btnCadastrarUsurio = new JButton("Cadastrar Usu\u00E1rio");
+		JButton btnCadastrarUsurio = new JButton("Cadastrar Usuario");
 		btnCadastrarUsurio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Cadastrar cadastrar = new Cadastrar();
@@ -88,8 +82,8 @@ public class interfaceServer extends JFrame {
 		for ( int i=0 ; i<novo.length ; i+=4){
 			if( novo[i+1] != null ){
 				ArrayList<String> dados = new ArrayList();
-				interfaceServer.addLinhas(dados, novo[i], novo[i+1], novo[i+2], novo[i+3]);
-				interfaceServer.listaCadastros.add(dados);
+				InterfaceServer.addLinhas(dados, novo[i], novo[i+1], novo[i+2], novo[i+3]);
+				InterfaceServer.listaCadastros.add(dados);
 				System.out.println(dados.toString());
 			} 
 		}

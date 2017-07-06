@@ -39,7 +39,7 @@ public class GDPServer implements Runnable {
 		int rwnd= RCV_BUFFER;
 		int contPktPerdidos = 0;
 		int lastByteRcvd = -TAM_DADOS;
-		int lastByteRead = -TAM_DADOS - 1;
+		int lastByteRead = -TAM_DADOS;
 		
 		byte[] dados = new byte[TAM_PKT];
 		DatagramPacket pkt = new DatagramPacket(dados, dados.length);
@@ -61,19 +61,19 @@ public class GDPServer implements Runnable {
 
 
 				Pacote p = deserializeObject(pkt.getData());
-				System.out.println("Server: " + new String(p.dados));
+				System.out.println("Server: " + new String(p.dados) + " " + p.numSeq);
 				
 				Random r = new Random();
 
 				if(r.nextInt(99) < USER_PERCENT) {
 					
-					int numSeq = p.numSeq;
+					int numSeq = p.numSeq; //1000
 					
 					if(!bufferRcv.isEmpty() && (p.numSeq < bufferRcv.get(bufferRcv.size() - 1).numSeq)) {
 						bufferRcv.add((p.numSeq / TAM_DADOS), p); // adiciona no buffer						
 					} else {
 						bufferRcv.add(p);
-						lastByteRcvd = p.numSeq + TAM_DADOS - 1;
+						lastByteRcvd = p.numSeq + TAM_DADOS; //2000
 					}
 					
 					// se o pacote recebido estiver em ordem:
@@ -82,10 +82,7 @@ public class GDPServer implements Runnable {
 						for (Pacote b : bufferRcv) {
 							if(b.numSeq == (lastByteRead + TAM_DADOS)) {
 								chat.addText(new String(p.dados) + "\n"); //entrega a aplicação
-								lastByteRead += TAM_DADOS;
-								bufferRcv.remove(lastByteRead / TAM_DADOS);
-							} else {
-								break;
+								lastByteRead += TAM_DADOS;//0 
 							}
 						}
 						
